@@ -55,7 +55,7 @@ const data = {
         },
         {
           title: "Tasks",
-          url: "/agents/tasks",
+          url: "/agent/tasks",
           pathPrefix: "/agent",
         },
       ],
