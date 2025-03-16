@@ -11,6 +11,7 @@ import {
 import { Check, Eye, Plus } from "lucide-react";
 import { AddPackageModal } from "./add-package-modal";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 // Package data structure
 const packages = [
@@ -67,6 +68,7 @@ const packages = [
 ];
 
 export function PackageCards() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [packageList, setPackageList] = useState(packages);
 
@@ -116,7 +118,13 @@ export function PackageCards() {
               <FeatureItem label={`Domain ${pkg.domain}`} description="" />
             </CardContent>
             <CardFooter className="p-4 flex justify-between gap-2">
-              <Button variant="outline" className="flex-1 gap-2">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  router.push(`/admin/packages/${pkg.id}/templates`)
+                }
+                className="flex-1 gap-2"
+              >
                 <Eye className="h-4 w-4" /> See Templates
               </Button>
               <Button variant="outline" className="flex-1 gap-2">
