@@ -25,11 +25,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast, Toaster } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 
 interface Task {
   id: number;
@@ -256,7 +256,9 @@ const TasksPage = () => {
                 audio.play().catch((e) => console.log("Audio play failed:", e));
 
                 // Show toast notification
-                toast("Time Expired!");
+                toast.error(
+                  `Time Expired! The timer for task #${task.id} has expired.`
+                );
 
                 // Start tracking extra time
                 startExtraTimeTracking(task.id);
@@ -450,7 +452,7 @@ const TasksPage = () => {
 
       // Show toast notification for task completion
       if (status === "completed") {
-        toast("Task Completed");
+        toast.success(`Task #${selectedTaskId} has been marked as completed.`);
       }
     }
     setIsModalOpen(false);
@@ -957,6 +959,7 @@ const TasksPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Toaster position="top-right" richColors />
     </div>
   );
 };
