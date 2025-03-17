@@ -9,11 +9,11 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Check, Eye, Plus } from "lucide-react";
-import { AddPackageModal } from "./add-package-modal";
+import { AddPackageModal } from "@/components/add-package-modal";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
-// Package data structure
+// Package data
 const packages = [
   {
     id: "DFP90",
@@ -72,9 +72,14 @@ export function PackageCards() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [packageList, setPackageList] = useState(packages);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addPackage = (newPackage: any) => {
     setPackageList([...packageList, newPackage]);
     setIsModalOpen(false);
+  };
+
+  const handleSeeTemplates = (packageId: string) => {
+    router.push(`/admin/packages/${packageId}/templates`);
   };
 
   return (
@@ -87,7 +92,7 @@ export function PackageCards() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packageList.map((pkg) => (
-          <Card key={pkg.id} className="overflow-hidden">
+          <Card key={pkg.id} className="overflow-hidden border-2 border-muted">
             <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row justify-between items-center">
               <h3 className="text-xl font-bold">{pkg.id}</h3>
               <Badge
@@ -117,17 +122,15 @@ export function PackageCards() {
               />
               <FeatureItem label={`Domain ${pkg.domain}`} description="" />
             </CardContent>
-            <CardFooter className="p-4 flex justify-between gap-2">
+            <CardFooter className="p-4 bg-muted/30 flex justify-between gap-2">
               <Button
                 variant="outline"
-                onClick={() =>
-                  router.push(`/admin/packages/${pkg.id}/templates`)
-                }
                 className="flex-1 gap-2"
+                onClick={() => handleSeeTemplates(pkg.id)}
               >
                 <Eye className="h-4 w-4" /> See Templates
               </Button>
-              <Button variant="outline" className="flex-1 gap-2">
+              <Button variant="secondary" className="flex-1 gap-2">
                 <Plus className="h-4 w-4" /> Add Template
               </Button>
             </CardFooter>

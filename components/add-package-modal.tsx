@@ -18,7 +18,8 @@ import { Label } from "@/components/ui/label";
 interface AddPackageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (newPackage: never) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onAdd: (newPackage: any) => void;
 }
 
 export function AddPackageModal({

@@ -1,4 +1,4 @@
-import { PackageCards } from "./package-cards";
+import { PackageCards } from "@/components/package-cards";
 
 export default function Home() {
   return (
