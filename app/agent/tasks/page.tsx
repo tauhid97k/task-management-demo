@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -908,7 +908,7 @@ const TasksPage = () => {
               Not Completed
             </Button>
           </div>
-          <DialogFooter className="sm:justify-center">
+          <DialogFooter className="justify-end">
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
@@ -959,7 +959,6 @@ const TasksPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Toaster position="top-right" richColors />
     </div>
   );
 };
