@@ -1,19 +1,14 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { AssignTaskModal } from "./assign-task-modal";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { AssignTaskModal } from "@/components/assign-task-modal"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-type TemplateStatus = "pending" | "in-progress" | "completed";
+type TemplateStatus = "pending" | "in-progress" | "completed"
 
 // Mock data for templates with status
 const mockTemplates = [
@@ -24,17 +19,9 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "pending" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm1",
-        name: "Alice",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm1", name: "Alice", avatar: "/placeholder.svg?height=30&width=30" },
       { id: "tm2", name: "Bob", avatar: "/placeholder.svg?height=30&width=30" },
-      {
-        id: "tm3",
-        name: "Charlie",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm3", name: "Charlie", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -60,16 +47,8 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "in-progress" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm4",
-        name: "David",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm5",
-        name: "Emma",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm4", name: "David", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm5", name: "Emma", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -94,21 +73,9 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "completed" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm6",
-        name: "Frank",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm7",
-        name: "Grace",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm8",
-        name: "Henry",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm6", name: "Frank", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm7", name: "Grace", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm8", name: "Henry", avatar: "/placeholder.svg?height=30&width=30" },
       { id: "tm9", name: "Ivy", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
@@ -135,16 +102,8 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "pending" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm10",
-        name: "Kevin",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm11",
-        name: "Laura",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm10", name: "Kevin", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm11", name: "Laura", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -168,21 +127,9 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "in-progress" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm12",
-        name: "Mike",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm13",
-        name: "Nancy",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm14",
-        name: "Oliver",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm12", name: "Mike", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm13", name: "Nancy", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm14", name: "Oliver", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -206,16 +153,8 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "completed" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm15",
-        name: "Paul",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm16",
-        name: "Quinn",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm15", name: "Paul", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm16", name: "Quinn", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -239,21 +178,9 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "in-progress" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm17",
-        name: "Rachel",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm18",
-        name: "Steve",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm19",
-        name: "Tina",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm17", name: "Rachel", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm18", name: "Steve", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm19", name: "Tina", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -277,16 +204,8 @@ const mockTemplates = [
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "pending" as TemplateStatus,
     teamMembers: [
-      {
-        id: "tm20",
-        name: "Uma",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
-      {
-        id: "tm21",
-        name: "Victor",
-        avatar: "/placeholder.svg?height=30&width=30",
-      },
+      { id: "tm20", name: "Uma", avatar: "/placeholder.svg?height=30&width=30" },
+      { id: "tm21", name: "Victor", avatar: "/placeholder.svg?height=30&width=30" },
     ],
     tasks: {
       social: [
@@ -303,7 +222,7 @@ const mockTemplates = [
       ],
     },
   },
-];
+]
 
 // Generate more templates for each package
 const generateTemplatesForPackage = (packageId: string) => {
@@ -312,27 +231,23 @@ const generateTemplatesForPackage = (packageId: string) => {
     ...template,
     id: `${packageId}-${template.id}`,
     clientName: template.clientName + (index % 2 === 0 ? " Jr." : " Sr."),
-    companyName:
-      template.companyName +
-      (index % 3 === 0 ? " Global" : index % 3 === 1 ? " Ltd." : " Inc."),
-  }));
-};
+    companyName: template.companyName + (index % 3 === 0 ? " Global" : index % 3 === 1 ? " Ltd." : " Inc."),
+  }))
+}
 
 export function TemplateList({ packageId }: { packageId: string }) {
-  const [templates] = useState(generateTemplatesForPackage(packageId));
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TemplateStatus | "all">("all");
+  const [templates] = useState(generateTemplatesForPackage(packageId))
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<TemplateStatus | "all">("all")
 
   const handleAssignTask = (templateId: string) => {
-    setSelectedTemplate(templateId);
-    setIsModalOpen(true);
-  };
+    setSelectedTemplate(templateId)
+    setIsModalOpen(true)
+  }
 
   const filteredTemplates =
-    activeTab === "all"
-      ? templates
-      : templates.filter((template) => template.status === activeTab);
+    activeTab === "all" ? templates : templates.filter((template) => template.status === activeTab)
 
   return (
     <div>
@@ -342,7 +257,7 @@ export function TemplateList({ packageId }: { packageId: string }) {
         onValueChange={(value) => setActiveTab(value as TemplateStatus | "all")}
         className="mb-6"
       >
-        <TabsList className="grid grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="in-progress">In Progress</TabsTrigger>
@@ -357,33 +272,21 @@ export function TemplateList({ packageId }: { packageId: string }) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage
-                      src={template.clientAvatar}
-                      alt={template.clientName}
-                    />
-                    <AvatarFallback>
-                      {template.clientName.substring(0, 2)}
-                    </AvatarFallback>
+                    <AvatarImage src={template.clientAvatar} alt={template.clientName} />
+                    <AvatarFallback>{template.clientName.substring(0, 2)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold">{template.clientName}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {template.companyName}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{template.companyName}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
                   <StatusBadge status={template.status} large />
                   <div className="flex -space-x-2">
                     {template.teamMembers.map((member) => (
-                      <Avatar
-                        key={member.id}
-                        className="border-2 border-background h-8 w-8"
-                      >
+                      <Avatar key={member.id} className="border-2 border-background h-8 w-8">
                         <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback>
-                          {member.name.substring(0, 2)}
-                        </AvatarFallback>
+                        <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
                     ))}
                     {template.teamMembers.length > 3 && (
@@ -404,6 +307,7 @@ export function TemplateList({ packageId }: { packageId: string }) {
             </CardContent>
             <CardFooter className="p-4 border-t">
               <Button
+                className="w-full"
                 onClick={() => handleAssignTask(template.id)}
                 disabled={template.status === "completed"}
               >
@@ -414,19 +318,15 @@ export function TemplateList({ packageId }: { packageId: string }) {
         ))}
       </div>
 
-      <AssignTaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        templateId={selectedTemplate}
-      />
+      <AssignTaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} templateId={selectedTemplate} />
     </div>
-  );
+  )
 }
 
 interface Task {
-  id: string;
-  name: string;
-  status: "pending" | "in-progress" | "completed";
+  id: string
+  name: string
+  status: "pending" | "in-progress" | "completed"
 }
 
 function TaskColumn({ title, tasks }: { title: string; tasks: Task[] }) {
@@ -435,46 +335,33 @@ function TaskColumn({ title, tasks }: { title: string; tasks: Task[] }) {
       <h4 className="font-medium mb-3">{title}</h4>
       <ul className="space-y-2">
         {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex items-center justify-between p-2 bg-muted/30 rounded-md"
-          >
+          <li key={task.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-md">
             <span className="text-sm">{task.name}</span>
             <StatusBadge status={task.status} />
           </li>
         ))}
       </ul>
     </div>
-  );
+  )
 }
 
-function StatusBadge({
-  status,
-  large = false,
-}: {
-  status: "pending" | "in-progress" | "completed";
-  large?: boolean;
-}) {
+function StatusBadge({ status, large = false }: { status: "pending" | "in-progress" | "completed"; large?: boolean }) {
   const variants = {
     pending: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
     "in-progress": "bg-blue-100 text-blue-800 hover:bg-blue-100",
     completed: "bg-green-100 text-green-800 hover:bg-green-100",
-  };
+  }
 
   const labels = {
     pending: "Pending",
     "in-progress": "In Progress",
     completed: "Completed",
-  };
+  }
 
   return (
-    <Badge
-      variant="outline"
-      className={`${variants[status]} ${
-        large ? "px-3 py-1 text-sm" : "text-xs"
-      }`}
-    >
+    <Badge variant="outline" className={`${variants[status]} ${large ? "px-3 py-1 text-sm" : "text-xs"}`}>
       {labels[status]}
     </Badge>
-  );
+  )
 }
+
