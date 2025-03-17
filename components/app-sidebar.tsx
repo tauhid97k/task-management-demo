@@ -49,6 +49,11 @@ const data = {
       url: "#",
       items: [
         {
+          title: "Dashboard",
+          url: "/admin",
+          pathPrefix: "/admin",
+        },
+        {
           title: "Packages",
           url: "/admin/packages",
           pathPrefix: "/admin",
