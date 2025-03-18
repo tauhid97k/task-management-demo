@@ -63,6 +63,11 @@ const data = {
           url: "/agent/tasks",
           pathPrefix: "/agent",
         },
+        {
+          title: "Projects",
+          url: "/agent/projects",
+          pathPrefix: "/agent",
+        },
       ],
     },
   ],
