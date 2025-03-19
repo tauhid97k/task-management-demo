@@ -28,17 +28,17 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Birds Of Eden Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "Birds Of Eden Corp.",
       logo: AudioWaveform,
       plan: "Startup",
     },
     {
-      name: "Evil Corp.",
+      name: "Birds Of Eden Corp.",
       logo: Command,
       plan: "Free",
     },
@@ -56,6 +56,11 @@ const data = {
         {
           title: "Packages",
           url: "/admin/packages",
+          pathPrefix: "/admin",
+        },
+        {
+          title: "Role Permissions",
+          url: "/admin/role-permissions",
           pathPrefix: "/admin",
         },
         {

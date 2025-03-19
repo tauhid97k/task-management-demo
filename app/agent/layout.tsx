@@ -43,7 +43,7 @@ export default function AgentLayout({
             </Breadcrumb>
           </div>
         </header>
-        <div className="p-4">{children}</div>
+        <div className="p-4 bg-[#f8f9fc] h-full">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -14,7 +14,7 @@ const mockTemplates = [
   {
     id: "template1",
     clientName: "John Smith",
-    companyName: "Acme Corporation",
+    companyName: "Birds Of Eden Corporation",
     clientAvatar: "/placeholder.svg?height=40&width=40",
     status: "pending" as TemplateStatus,
     teamMembers: [

@@ -69,7 +69,7 @@ const recentActivity = [
     id: 5,
     user: "Edward Wilson",
     action: "Added client",
-    item: "Acme Corporation",
+    item: "Birds Of Eden Corporation",
     time: "Yesterday",
     avatar: "/placeholder.svg?height=32&width=32",
   },

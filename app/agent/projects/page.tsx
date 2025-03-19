@@ -53,7 +53,7 @@ import {
 const initialProjects = [
   {
     id: 1,
-    clientName: "Acme Corporation",
+    clientName: "Birds Of Eden Corporation",
     packageName: "DFP240",
     status: "draft",
     startDate: "2025-03-01",
