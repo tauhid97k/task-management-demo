@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { AudioWaveform, Command, GalleryVerticalEnd } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
@@ -19,67 +18,74 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Birds Of Eden Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Birds Of Eden Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Birds Of Eden Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "General",
-      url: "#",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/admin",
-          pathPrefix: "/admin",
-        },
-        {
-          title: "Packages",
-          url: "/admin/packages",
-          pathPrefix: "/admin",
-        },
-        {
-          title: "Role Permissions",
-          url: "/admin/role-permissions",
-          pathPrefix: "/admin",
-        },
-        {
-          title: "Tasks",
-          url: "/agent/tasks",
-          pathPrefix: "/agent",
-        },
-        {
-          title: "Projects",
-          url: "/agent/projects",
-          pathPrefix: "/agent",
-        },
-      ],
-    },
-  ],
-};
+import { useSession } from "@/lib/auth-client";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const role = session?.user?.role;
+
+  const data = {
+    user: {
+      name: session?.user.name,
+      email: session?.user.email,
+      avatar: "/avatars/shadcn.jpg",
+    },
+    teams: [
+      {
+        name: "Birds Of Eden Inc",
+        logo: GalleryVerticalEnd,
+        plan: "Enterprise",
+      },
+      {
+        name: "Birds Of Eden Corp.",
+        logo: AudioWaveform,
+        plan: "Startup",
+      },
+      {
+        name: "Birds Of Eden Corp.",
+        logo: Command,
+        plan: "Free",
+      },
+    ],
+    navMain: [
+      {
+        title: "General",
+        url: "#",
+        items: [
+          {
+            title: "Dashboard",
+            url: "/admin",
+            roles: ["admin"],
+          },
+          {
+            title: "Packages",
+            url: "/admin/packages",
+            roles: ["admin"],
+          },
+          {
+            title: "Role Permissions",
+            url: "/admin/role-permissions",
+            roles: ["admin"],
+          },
+          {
+            title: "Tasks",
+            url: "/agent/tasks",
+            roles: ["agent"],
+          },
+          {
+            title: "Projects",
+            url: "/agent/projects",
+            roles: ["agent"],
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -93,13 +99,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupContent>
               <SidebarMenu>
                 {item.items
-                  .filter((navItem) =>
-                    pathname?.startsWith(navItem.pathPrefix || "")
-                  )
+                  .filter((navItem) => navItem.roles?.includes(role as string))
                   .map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <a href={item.url}>{item.title}</a>
+                        <Link
+                          className={cn({
+                            "bg-sidebar-accent ring-1 ring-zinc-200":
+                              item.url == pathname,
+                          })}
+                          href={item.url}
+                        >
+                          {item.title}
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}

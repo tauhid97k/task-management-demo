@@ -26,6 +26,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
 
 export function NavUser({
   user,
@@ -100,7 +101,17 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/sign-in")}>
+            <DropdownMenuItem
+              onClick={() => {
+                signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      router.push("/auth/sign-in");
+                    },
+                  },
+                });
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
