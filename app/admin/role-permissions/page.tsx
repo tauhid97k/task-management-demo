@@ -1193,9 +1193,7 @@ export default function RolePermissionsPage() {
                           </div>
                         </div>
                         {role.isDefault && (
-                          <Badge variant="outline" className="text-xs">
-                            Default
-                          </Badge>
+                          <Badge className="text-xs">Default</Badge>
                         )}
                       </div>
                     ))}
