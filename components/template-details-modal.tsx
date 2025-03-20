@@ -1,38 +1,55 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { AssignTaskModal } from "@/components/assign-task-modal"
-import { CalendarClock, CheckCircle2, Clock, Users } from "lucide-react"
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { AssignTaskModal } from "@/components/assign-task-modal";
+import { CalendarClock, CheckCircle2, Clock, Users } from "lucide-react";
 
 interface TemplateDetailsModalProps {
-  isOpen: boolean
-  onClose: () => void
-  template: any
+  isOpen: boolean;
+  onClose: () => void;
+  template: any;
 }
 
-export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDetailsModalProps) {
-  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState("overview")
+export function TemplateDetailsModal({
+  isOpen,
+  onClose,
+  template,
+}: TemplateDetailsModalProps) {
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Calculate task statistics
-  const allTasks = Object.values(template.tasks).flat() as any[]
-  const completedTasks = allTasks.filter((task) => task.status === "completed").length
-  const inProgressTasks = allTasks.filter((task) => task.status === "in-progress").length
-  const pendingTasks = allTasks.filter((task) => task.status === "pending").length
-  const completionPercentage = Math.round((completedTasks / allTasks.length) * 100)
+  const allTasks = Object.values(template.tasks).flat() as any[];
+  const completedTasks = allTasks.filter(
+    (task) => task.status === "completed"
+  ).length;
+  const inProgressTasks = allTasks.filter(
+    (task) => task.status === "in-progress"
+  ).length;
+  const pendingTasks = allTasks.filter(
+    (task) => task.status === "pending"
+  ).length;
+  const completionPercentage = Math.round(
+    (completedTasks / allTasks.length) * 100
+  );
 
   const handleAssignTask = () => {
-    setIsAssignModalOpen(true)
-  }
+    setIsAssignModalOpen(true);
+  };
 
   return (
     <>
@@ -44,12 +61,19 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
 
           <div className="flex items-center gap-4 mb-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={template.clientAvatar} alt={template.clientName} />
-              <AvatarFallback>{template.clientName.substring(0, 2)}</AvatarFallback>
+              <AvatarImage
+                src={template.clientAvatar}
+                alt={template.clientName}
+              />
+              <AvatarFallback>
+                {template.clientName.substring(0, 2)}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <h2 className="text-lg font-semibold">{template.clientName}</h2>
-              <p className="text-sm text-muted-foreground">{template.companyName}</p>
+              <p className="text-sm text-muted-foreground">
+                {template.companyName}
+              </p>
             </div>
             <StatusBadge status={template.status} />
           </div>
@@ -75,7 +99,10 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
                     value={`${completionPercentage}%`}
                     description={`${completedTasks} of ${allTasks.length} tasks`}
                   >
-                    <Progress value={completionPercentage} className="h-2 mt-2" />
+                    <Progress
+                      value={completionPercentage}
+                      className="h-2 mt-2"
+                    />
                   </StatCard>
 
                   <StatCard
@@ -85,8 +112,8 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
                       template.status === "pending"
                         ? "Pending"
                         : template.status === "in-progress"
-                          ? "In Progress"
-                          : "Completed"
+                        ? "In Progress"
+                        : "Completed"
                     }
                     description={`${pendingTasks} pending, ${inProgressTasks} in progress`}
                   />
@@ -100,17 +127,35 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <TaskOverviewCard title="Social" tasks={template.tasks.social} />
-                  <TaskOverviewCard title="Content" tasks={template.tasks.content} />
-                  <TaskOverviewCard title="Design" tasks={template.tasks.design} />
+                  <TaskOverviewCard
+                    title="Social"
+                    tasks={template.tasks.social}
+                  />
+                  <TaskOverviewCard
+                    title="Content"
+                    tasks={template.tasks.content}
+                  />
+                  <TaskOverviewCard
+                    title="Design"
+                    tasks={template.tasks.design}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="tasks" className="mt-0 space-y-4">
                 <div className="grid grid-cols-1 gap-4">
-                  <TaskCategoryCard title="Social Tasks" tasks={template.tasks.social} />
-                  <TaskCategoryCard title="Content Tasks" tasks={template.tasks.content} />
-                  <TaskCategoryCard title="Design Tasks" tasks={template.tasks.design} />
+                  <TaskCategoryCard
+                    title="Social Tasks"
+                    tasks={template.tasks.social}
+                  />
+                  <TaskCategoryCard
+                    title="Content Tasks"
+                    tasks={template.tasks.content}
+                  />
+                  <TaskCategoryCard
+                    title="Design Tasks"
+                    tasks={template.tasks.design}
+                  />
                 </div>
               </TabsContent>
 
@@ -121,11 +166,15 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
                       <CardContent className="p-4 flex items-center gap-3">
                         <Avatar>
                           <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                          <AvatarFallback>
+                            {member.name.substring(0, 2)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <h4 className="font-medium">{member.name}</h4>
-                          <p className="text-sm text-muted-foreground">Team Member</p>
+                          <p className="text-sm text-muted-foreground">
+                            Team Member
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
@@ -136,7 +185,10 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
           </Tabs>
 
           <div className="mt-4 pt-4 border-t flex justify-end">
-            <Button onClick={handleAssignTask} disabled={template.status === "completed"}>
+            <Button
+              onClick={handleAssignTask}
+              disabled={template.status === "completed"}
+            >
               Assign Task
             </Button>
           </div>
@@ -149,38 +201,51 @@ export function TemplateDetailsModal({ isOpen, onClose, template }: TemplateDeta
         templateId={template.id}
       />
     </>
-  )
+  );
 }
 
-function StatusBadge({ status }: { status: "pending" | "in-progress" | "completed" }) {
+function StatusBadge({
+  status,
+}: {
+  status: "pending" | "in-progress" | "completed";
+}) {
   const variants = {
     pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
     "in-progress": "bg-blue-100 text-blue-800 hover:bg-blue-100",
     completed: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  }
+  };
 
   const labels = {
     pending: "Pending",
     "in-progress": "In Progress",
     completed: "Completed",
-  }
+  };
 
   return (
-    <Badge variant="outline" className={`px-3 py-1 text-sm ${variants[status]}`}>
+    <Badge
+      variant="outline"
+      className={`px-3 py-1 text-sm ${variants[status]}`}
+    >
       {labels[status]}
     </Badge>
-  )
+  );
 }
 
 interface StatCardProps {
-  icon: React.ReactNode
-  title: string
-  value: string
-  description: string
-  children?: React.ReactNode
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  description: string;
+  children?: React.ReactNode;
 }
 
-function StatCard({ icon, title, value, description, children }: StatCardProps) {
+function StatCard({
+  icon,
+  title,
+  value,
+  description,
+  children,
+}: StatCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -195,14 +260,14 @@ function StatCard({ icon, title, value, description, children }: StatCardProps) 
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function TaskOverviewCard({ title, tasks }: { title: string; tasks: any[] }) {
-  const completed = tasks.filter((t) => t.status === "completed").length
-  const inProgress = tasks.filter((t) => t.status === "in-progress").length
-  const pending = tasks.filter((t) => t.status === "pending").length
-  const completionPercentage = Math.round((completed / tasks.length) * 100)
+  const completed = tasks.filter((t) => t.status === "completed").length;
+  const inProgress = tasks.filter((t) => t.status === "in-progress").length;
+  const pending = tasks.filter((t) => t.status === "pending").length;
+  const completionPercentage = Math.round((completed / tasks.length) * 100);
 
   return (
     <Card>
@@ -232,7 +297,7 @@ function TaskOverviewCard({ title, tasks }: { title: string; tasks: any[] }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function TaskCategoryCard({ title, tasks }: { title: string; tasks: any[] }) {
@@ -249,7 +314,10 @@ function TaskCategoryCard({ title, tasks }: { title: string; tasks: any[] }) {
       <CardContent className="p-4 pt-0">
         <div className="space-y-2 mt-2">
           {tasks.map((task: any) => (
-            <div key={task.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-md">
+            <div
+              key={task.id}
+              className="flex items-center justify-between p-2 bg-muted/30 rounded-md"
+            >
               <div className="flex items-center gap-2">
                 {task.status === "completed" ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -266,6 +334,5 @@ function TaskCategoryCard({ title, tasks }: { title: string; tasks: any[] }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

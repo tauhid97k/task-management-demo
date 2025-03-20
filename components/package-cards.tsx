@@ -8,10 +8,11 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Check, Eye, Plus } from "lucide-react";
-import { AddPackageModal } from "@/components/add-package-modal";
+import { Check, Eye, Info, Plus } from "lucide-react";
+import { AddPackageModal2 } from "@/components/add-package-modal-2";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { PackageDetailsModal } from "@/components/package-details-modal";
 
 // Package data
 const packages = [
@@ -19,7 +20,7 @@ const packages = [
     id: "DFP90",
     subscriptions: 29,
     days: 90,
-    socialSites: 13,
+    socialSites: 11,
     web2Sites: 5,
     additionalAssets: 10,
     monthlyEngagement: 1,
@@ -29,17 +30,27 @@ const packages = [
     id: "DFP120",
     subscriptions: 12,
     days: 120,
-    socialSites: 20,
-    web2Sites: 11,
+    socialSites: 22,
+    web2Sites: 10,
     additionalAssets: 10,
     monthlyEngagement: 3,
     domain: "2/3",
   },
   {
-    id: "DFP240",
+    id: "DFP180",
     subscriptions: 21,
     days: 240,
-    socialSites: 34,
+    socialSites: 24,
+    web2Sites: 11,
+    additionalAssets: 10,
+    monthlyEngagement: 3,
+    domain: "2/3 or more",
+  },
+  {
+    id: "DFP240",
+    subscriptions: 21,
+    days: 270,
+    socialSites: 29,
     web2Sites: 11,
     additionalAssets: 10,
     monthlyEngagement: 3,
@@ -47,20 +58,10 @@ const packages = [
   },
   {
     id: "DFP270",
-    subscriptions: 21,
-    days: 270,
-    socialSites: 34,
-    web2Sites: 11,
-    additionalAssets: 10,
-    monthlyEngagement: 3,
-    domain: "2/3 or more",
-  },
-  {
-    id: "DFP360",
     subscriptions: 5,
     days: 360,
-    socialSites: 40,
-    web2Sites: 12,
+    socialSites: 34,
+    web2Sites: 11,
     additionalAssets: 10,
     monthlyEngagement: 3,
     domain: "3 or more",
@@ -71,6 +72,8 @@ export function PackageCards() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [packageList, setPackageList] = useState(packages);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addPackage = (newPackage: any) => {
@@ -80,6 +83,11 @@ export function PackageCards() {
 
   const handleSeeTemplates = (packageId: string) => {
     router.push(`/admin/packages/${packageId}/templates`);
+  };
+
+  const handleViewDetails = (packageId: string) => {
+    setSelectedPackage(packageId);
+    setIsDetailsModalOpen(true);
   };
 
   return (
@@ -122,27 +130,44 @@ export function PackageCards() {
               />
               <FeatureItem label={`Domain ${pkg.domain}`} description="" />
             </CardContent>
-            <CardFooter className="p-4 bg-muted/30 flex justify-between gap-2">
+            <CardFooter className="p-4 bg-muted/30 flex flex-col gap-2">
+              <div className="flex gap-2 w-full">
+                <Button
+                  variant="outline"
+                  className="flex-1 gap-2"
+                  onClick={() => handleSeeTemplates(pkg.id)}
+                >
+                  <Eye className="h-4 w-4" /> See Templates
+                </Button>
+                <Button variant="secondary" className="flex-1 gap-2">
+                  <Plus className="h-4 w-4" /> Add Template
+                </Button>
+              </div>
               <Button
-                variant="outline"
-                className="flex-1 gap-2"
-                onClick={() => handleSeeTemplates(pkg.id)}
+                variant="default"
+                className="w-full gap-2"
+                onClick={() => handleViewDetails(pkg.id)}
               >
-                <Eye className="h-4 w-4" /> See Templates
-              </Button>
-              <Button variant="secondary" className="flex-1 gap-2">
-                <Plus className="h-4 w-4" /> Add Template
+                <Info className="h-4 w-4" /> View Details
               </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
 
-      <AddPackageModal
+      <AddPackageModal2
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={addPackage}
       />
+
+      {selectedPackage && (
+        <PackageDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          packageId={selectedPackage}
+        />
+      )}
     </div>
   );
 }
