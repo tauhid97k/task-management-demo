@@ -749,30 +749,46 @@ const TasksPage = () => {
     return tabStates[activeTab].tasks.filter((task) => task.extraTimeSpent > 0);
   };
 
-  // Get incomplete tasks for current tab
-  const getIncompleteTasks = () => {
-    return tabStates[activeTab].tasks.filter(
-      (task) => task.status !== "completed"
-    );
+  // Get all tasks for the current tab
+  const getAllTasks = () => {
+    return tabStates[activeTab].tasks;
   };
 
-  // Get completed tasks for current tab
-  const getCompletedTasks = () => {
-    return tabStates[activeTab].tasks.filter(
-      (task) => task.status === "completed"
-    );
+  // Get paginated tasks for the current tab
+  const getPaginatedTasks = () => {
+    const { currentPage, rowsPerPage } = tabStates[activeTab];
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    // First get all tasks
+    const allTasks = [...tabStates[activeTab].tasks];
+
+    // Sort tasks: incomplete first, then completed
+    allTasks.sort((a, b) => {
+      if (a.status === "completed" && b.status !== "completed") return 1;
+      if (a.status !== "completed" && b.status === "completed") return -1;
+      return 0;
+    });
+
+    // Return the slice for the current page
+    return allTasks.slice(startIndex, endIndex);
   };
+
+  // Get total tasks count for the current tab
+  const getTotalTasksCount = () => {
+    return tabStates[activeTab].tasks.length;
+  };
+
+  const tasksWithExtraTime = getTasksWithExtraTime();
+  const paginatedTasks = getPaginatedTasks();
+  const totalTasksCount = getTotalTasksCount();
+  const currentTabState = tabStates[activeTab];
 
   // Calculate progress percentage for timer
   const calculateProgress = (task: Task): number => {
     if (task.timeRemaining === null) return 100;
     return (task.timeRemaining / task.timeAllotted) * 100;
   };
-
-  const tasksWithExtraTime = getTasksWithExtraTime();
-  const incompleteTasks = getIncompleteTasks();
-  const completedTasks = getCompletedTasks();
-  const currentTabState = tabStates[activeTab];
 
   return (
     <div className="container mx-auto py-6">
@@ -956,187 +972,173 @@ const TasksPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Incomplete Tasks */}
                   {tab.id === activeTab &&
-                    incompleteTasks.map((task) => (
+                    paginatedTasks.map((task) => (
                       <tr
                         key={task.id}
                         className={`border-b hover:bg-muted/20 transition-colors ${
-                          task.status === "not-completed" || task.timerExpired
+                          task.status === "completed"
+                            ? "bg-green-50"
+                            : task.status === "not-completed" ||
+                              task.timerExpired
                             ? "bg-red-50"
                             : ""
                         }`}
                       >
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() => handleCheckboxClick(task.id)}
-                            className="flex items-center justify-center w-6 h-6 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                            aria-label={`Update status for task ${task.id}`}
-                          >
-                            {task.status === "not-completed" ? (
-                              <XCircle className="h-6 w-6 text-red-600" />
-                            ) : (
-                              <div className="w-5 h-5 border-2 border-gray-300 rounded-sm" />
-                            )}
-                          </button>
+                          {task.status === "completed" ? (
+                            <div className="flex items-center justify-center w-6 h-6">
+                              <CheckCircle2 className="h-6 w-6 text-green-600" />
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleCheckboxClick(task.id)}
+                              className="flex items-center justify-center w-6 h-6 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                              aria-label={`Update status for task ${task.id}`}
+                            >
+                              {task.status === "not-completed" ? (
+                                <XCircle className="h-6 w-6 text-red-600" />
+                              ) : (
+                                <div className="w-5 h-5 border-2 border-gray-300 rounded-sm" />
+                              )}
+                            </button>
+                          )}
                         </td>
                         <td className="px-4 py-3 min-w-[200px]">
-                          <div className="flex flex-col gap-1.5">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`font-mono font-medium text-sm ${
-                                    task.timerExpired
-                                      ? "text-red-600"
-                                      : task.timeRemaining !== null &&
-                                        task.timeRemaining < 10
-                                      ? "text-red-600"
-                                      : task.timeRemaining !== null &&
-                                        task.timeRemaining < 30
-                                      ? "text-amber-600"
-                                      : "text-slate-700"
-                                  }`}
+                          {task.status === "completed" ? (
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant="success"
+                                className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1"
+                              >
+                                <Check className="h-3 w-3" />
+                                Completed
+                              </Badge>
+
+                              {task.totalTimeSpent > 0 && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-green-50 text-green-700 border-green-200 font-mono text-xs"
                                 >
-                                  {formatTime(
-                                    task.timeRemaining !== null
-                                      ? task.timeRemaining
-                                      : task.timeAllotted
+                                  {formatTime(task.totalTimeSpent)}
+                                </Badge>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-1.5">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className={`font-mono font-medium text-sm ${
+                                      task.timerExpired
+                                        ? "text-red-600"
+                                        : task.timeRemaining !== null &&
+                                          task.timeRemaining < 10
+                                        ? "text-red-600"
+                                        : task.timeRemaining !== null &&
+                                          task.timeRemaining < 30
+                                        ? "text-amber-600"
+                                        : "text-slate-700"
+                                    }`}
+                                  >
+                                    {formatTime(
+                                      task.timeRemaining !== null
+                                        ? task.timeRemaining
+                                        : task.timeAllotted
+                                    )}
+                                  </div>
+
+                                  {task.extraTimeSpent > 0 && (
+                                    <Badge
+                                      variant="outline"
+                                      className="bg-red-50 text-red-700 border-red-200 text-xs"
+                                    >
+                                      +{formatTime(task.extraTimeSpent)}
+                                    </Badge>
                                   )}
                                 </div>
 
-                                {task.extraTimeSpent > 0 && (
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-red-50 text-red-700 border-red-200 text-xs"
-                                  >
-                                    +{formatTime(task.extraTimeSpent)}
-                                  </Badge>
-                                )}
+                                <div className="flex items-center gap-1">
+                                  {task.timerExpired ? (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleResetTimer(task.id)}
+                                      className="h-7 w-7 rounded-full"
+                                    >
+                                      <RotateCcw className="h-3.5 w-3.5 text-slate-600" />
+                                      <span className="sr-only">
+                                        Reset timer
+                                      </span>
+                                    </Button>
+                                  ) : task.timerActive ? (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        setTabStates((prev) => ({
+                                          ...prev,
+                                          [activeTab]: {
+                                            ...prev[activeTab],
+                                            tasks: prev[activeTab].tasks.map(
+                                              (t) =>
+                                                t.id === task.id
+                                                  ? { ...t, timerActive: false }
+                                                  : t
+                                            ),
+                                          },
+                                        }));
+                                      }}
+                                      className="h-7 w-7 rounded-full bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
+                                    >
+                                      <Pause className="h-3.5 w-3.5" />
+                                      <span className="sr-only">
+                                        Pause timer
+                                      </span>
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleStartTimer(task.id)}
+                                      className="h-7 w-7 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800"
+                                    >
+                                      <Play className="h-3.5 w-3.5" />
+                                      <span className="sr-only">
+                                        Start timer
+                                      </span>
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
 
-                              <div className="flex items-center gap-1">
-                                {task.timerExpired ? (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleResetTimer(task.id)}
-                                    className="h-7 w-7 rounded-full"
-                                  >
-                                    <RotateCcw className="h-3.5 w-3.5 text-slate-600" />
-                                    <span className="sr-only">Reset timer</span>
-                                  </Button>
-                                ) : task.timerActive ? (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => {
-                                      setTabStates((prev) => ({
-                                        ...prev,
-                                        [activeTab]: {
-                                          ...prev[activeTab],
-                                          tasks: prev[activeTab].tasks.map(
-                                            (t) =>
-                                              t.id === task.id
-                                                ? { ...t, timerActive: false }
-                                                : t
-                                          ),
-                                        },
-                                      }));
-                                    }}
-                                    className="h-7 w-7 rounded-full bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
-                                  >
-                                    <Pause className="h-3.5 w-3.5" />
-                                    <span className="sr-only">Pause timer</span>
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleStartTimer(task.id)}
-                                    className="h-7 w-7 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800"
-                                  >
-                                    <Play className="h-3.5 w-3.5" />
-                                    <span className="sr-only">Start timer</span>
-                                  </Button>
-                                )}
-                              </div>
+                              <Progress
+                                value={calculateProgress(task)}
+                                className={`h-1.5 ${
+                                  task.timerExpired
+                                    ? "bg-red-200"
+                                    : task.timeRemaining !== null &&
+                                      task.timeRemaining < 10
+                                    ? "bg-red-200"
+                                    : task.timeRemaining !== null &&
+                                      task.timeRemaining < 30
+                                    ? "bg-amber-200"
+                                    : "bg-slate-200"
+                                }`}
+                                indicatorClassName={`${
+                                  task.timerExpired
+                                    ? "bg-red-600"
+                                    : task.timeRemaining !== null &&
+                                      task.timeRemaining < 10
+                                    ? "bg-red-600"
+                                    : task.timeRemaining !== null &&
+                                      task.timeRemaining < 30
+                                    ? "bg-amber-600"
+                                    : "bg-blue-600"
+                                }`}
+                              />
                             </div>
-
-                            <Progress
-                              value={calculateProgress(task)}
-                              className={`h-1.5 ${
-                                task.timerExpired
-                                  ? "bg-red-200"
-                                  : task.timeRemaining !== null &&
-                                    task.timeRemaining < 10
-                                  ? "bg-red-200"
-                                  : task.timeRemaining !== null &&
-                                    task.timeRemaining < 30
-                                  ? "bg-amber-200"
-                                  : "bg-slate-200"
-                              }`}
-                              indicatorClassName={`${
-                                task.timerExpired
-                                  ? "bg-red-600"
-                                  : task.timeRemaining !== null &&
-                                    task.timeRemaining < 10
-                                  ? "bg-red-600"
-                                  : task.timeRemaining !== null &&
-                                    task.timeRemaining < 30
-                                  ? "bg-amber-600"
-                                  : "bg-blue-600"
-                              }`}
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Link
-                            href={task.link}
-                            className="text-blue-600 hover:underline"
-                            target="_blank"
-                          >
-                            {task.link}
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3">{task.username}</td>
-                        <td className="px-4 py-3">{task.email}</td>
-                        <td className="px-4 py-3 font-mono text-sm">
-                          {task.password}
-                        </td>
-                      </tr>
-                    ))}
-
-                  {/* Completed Tasks */}
-                  {tab.id === activeTab &&
-                    completedTasks.map((task) => (
-                      <tr
-                        key={task.id}
-                        className="border-b hover:bg-muted/20 transition-colors bg-green-50"
-                      >
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-center w-6 h-6">
-                            <CheckCircle2 className="h-6 w-6 text-green-600" />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 min-w-[200px]">
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant="success"
-                              className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1"
-                            >
-                              <Check className="h-3 w-3" />
-                              Completed
-                            </Badge>
-
-                            {task.totalTimeSpent > 0 && (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-50 text-green-700 border-green-200 font-mono text-xs"
-                              >
-                                {formatTime(task.totalTimeSpent)}
-                              </Badge>
-                            )}
-                          </div>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <Link
@@ -1186,15 +1188,17 @@ const TasksPage = () => {
         </div>
 
         <div className="ml-4 text-sm text-muted-foreground">
-          {(tabStates[activeTab].currentPage - 1) *
-            tabStates[activeTab].rowsPerPage +
-            1}
-          -
-          {Math.min(
-            tabStates[activeTab].currentPage * tabStates[activeTab].rowsPerPage,
-            tabStates[activeTab].tasks.length
-          )}{" "}
-          of {tabStates[activeTab].tasks.length}
+          {tabStates[activeTab].tasks.length > 0
+            ? `${
+                (tabStates[activeTab].currentPage - 1) *
+                  tabStates[activeTab].rowsPerPage +
+                1
+              }-${Math.min(
+                tabStates[activeTab].currentPage *
+                  tabStates[activeTab].rowsPerPage,
+                totalTasksCount
+              )} of ${totalTasksCount}`
+            : "0-0 of 0"}
         </div>
 
         <Button
