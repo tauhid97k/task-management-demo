@@ -1,18 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  ChevronDown,
-  Edit,
-  FileText,
-  Plus,
-  Save,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { Edit, FileText, Plus, Save, Trash2, Users } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,129 +39,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Sample client projects data
-const initialProjects = [
-  {
-    id: 1,
-    clientName: "Birds Of Eden Corporation",
-    packageName: "DFP240",
-    status: "draft",
-    startDate: "2025-03-01",
-    dueDate: "2025-10-27",
-    description: "E-commerce website optimization and social media management",
-    logo: "/placeholder.svg?height=60&width=60",
-    draftTasks: [
-      { id: 1, text: "Create Facebook business page" },
-      { id: 2, text: "Set up Instagram profile" },
-      { id: 3, text: "Design logo variations" },
-      { id: 4, text: "Write product descriptions for 20 items" },
-      { id: 5, text: "SEO optimization for product pages" },
-    ],
-    organizedTasks: [],
-  },
-  {
-    id: 2,
-    clientName: "TechStart Inc",
-    packageName: "DFP120",
-    status: "in-progress",
-    startDate: "2025-02-15",
-    dueDate: "2025-06-15",
-    description: "SaaS product launch campaign with content marketing",
-    logo: "/placeholder.svg?height=60&width=60",
-    draftTasks: [
-      { id: 1, text: "Create product demo video" },
-      { id: 2, text: "Write 5 blog posts about product features" },
-      { id: 3, text: "Design landing page mockups" },
-      { id: 4, text: "Set up email marketing campaign" },
-      { id: 5, text: "Create social media announcement graphics" },
-    ],
-    organizedTasks: [],
-  },
-  {
-    id: 3,
-    clientName: "Local Bistro",
-    packageName: "DFP90",
-    status: "completed",
-    startDate: "2025-01-10",
-    dueDate: "2025-04-10",
-    description: "Local SEO and social media presence for restaurant",
-    logo: "/placeholder.svg?height=60&width=60",
-    draftTasks: [
-      { id: 1, text: "Set up Google Business Profile" },
-      { id: 2, text: "Create menu photos for social media" },
-      { id: 3, text: "Set up reservation system" },
-      { id: 4, text: "Create local citation listings" },
-      { id: 5, text: "Design promotional flyers" },
-    ],
-    organizedTasks: [],
-  },
-];
-
-// Task categories
-const taskCategories = [
-  { id: "social", name: "Social Media" },
-  { id: "content", name: "Content Creation" },
-  { id: "design", name: "Design" },
-  { id: "seo", name: "SEO" },
-  { id: "web", name: "Web Development" },
-  { id: "email", name: "Email Marketing" },
-  { id: "ads", name: "Paid Advertising" },
-  { id: "other", name: "Other" },
-];
-
-// Package information (from previous component)
-const packages = [
-  {
-    id: 1,
-    name: "DFP90",
-    duration: "90 Days",
-    socialSites: 13,
-    web2s: 5,
-    additionalAssets: 10,
-    monthlyEngagement: 1,
-    domain: 1,
-  },
-  {
-    id: 2,
-    name: "DFP120",
-    duration: "120 Days",
-    socialSites: 20,
-    web2s: 11,
-    additionalAssets: 10,
-    monthlyEngagement: 3,
-    domain: "2/3",
-  },
-  {
-    id: 3,
-    name: "DFP240",
-    duration: "240 Days",
-    socialSites: 34,
-    web2s: 11,
-    additionalAssets: 10,
-    monthlyEngagement: 3,
-    domain: "2/3 or more",
-  },
-  {
-    id: 4,
-    name: "DFP270",
-    duration: "270 Days",
-    socialSites: 34,
-    web2s: 11,
-    additionalAssets: 10,
-    monthlyEngagement: 3,
-    domain: "2/3 or more",
-  },
-  {
-    id: 5,
-    name: "DFP360",
-    duration: "360 Days",
-    socialSites: 40,
-    web2s: 12,
-    additionalAssets: 10,
-    monthlyEngagement: 3,
-    domain: "3 or more",
-  },
-];
+// Import data from separate files
+import { initialProjects } from "@/Data/projects";
+import { taskCategories } from "@/Data/task-categories";
+import { packages } from "@/Data/packages";
 
 const AgentProjects = () => {
   const [projects, setProjects] = useState(initialProjects);
