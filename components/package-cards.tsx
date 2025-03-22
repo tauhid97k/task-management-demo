@@ -100,7 +100,10 @@ export function PackageCards() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packageList.map((pkg) => (
-          <Card key={pkg.id} className="overflow-hidden border-2 border-muted">
+          <Card
+            key={pkg.id}
+            className="overflow-hidden hover:ring-2 ring-muted-foreground ring-offset-2 transition-[box-shadow] "
+          >
             <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row justify-between items-center">
               <h3 className="text-xl font-bold">{pkg.id}</h3>
               <Badge
@@ -134,22 +137,19 @@ export function PackageCards() {
               <div className="flex gap-2 w-full">
                 <Button
                   variant="outline"
-                  className="flex-1 gap-2"
+                  className="flex-1"
                   onClick={() => handleSeeTemplates(pkg.id)}
                 >
                   <Eye className="h-4 w-4" /> See Templates
                 </Button>
-                <Button variant="secondary" className="flex-1 gap-2">
-                  <Plus className="h-4 w-4" /> Add Template
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => handleViewDetails(pkg.id)}
+                >
+                  <Info className="h-4 w-4" /> View Details
                 </Button>
               </div>
-              <Button
-                variant="default"
-                className="w-full gap-2"
-                onClick={() => handleViewDetails(pkg.id)}
-              >
-                <Info className="h-4 w-4" /> View Details
-              </Button>
             </CardFooter>
           </Card>
         ))}
