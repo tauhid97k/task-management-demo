@@ -76,7 +76,7 @@ export function ClientDashboard() {
   const [reportType, setReportType] = useState("");
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="p-3">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
