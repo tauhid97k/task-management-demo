@@ -1,5 +1,80 @@
-// Agent data
-export const agentData = {
+// Agent data types
+export interface AgentData {
+  id: number;
+  name: string;
+  avatar: string;
+  designation: string;
+  email: string;
+  joinDate: string;
+  department: string;
+  team: string;
+  manager: string;
+
+  // Performance metrics
+  performanceScore: number;
+  performanceTrend: "up" | "down" | "stable";
+  taskCompletionRate: number;
+  qualityScore: number;
+  clientSatisfaction: number;
+
+  // Time tracking
+  totalHoursWorked: number;
+  hoursThisMonth: number;
+  hoursLastMonth: number;
+  averageHoursPerDay: number;
+  overtimeHours: number;
+
+  // Task statistics
+  tasksCompleted: number;
+  tasksOnTime: number;
+  tasksEarly: number;
+  tasksLate: number;
+  averageTaskCompletionTime: string;
+
+  // Project statistics
+  projectsCompleted: number;
+  activeProjects: number;
+  averageProjectCompletionTime: string;
+
+  // Scoring
+  onTimeScore: number;
+  earlyBonus: number;
+  latePenalty: number;
+  totalScore: number;
+
+  // Monthly performance
+  monthlyPerformance: { month: string; score: number }[];
+
+  // Task categories
+  taskCategories: { category: string; count: number; percentage: number }[];
+
+  // Client distribution
+  clientDistribution: { client: string; count: number; percentage: number }[];
+
+  // Recent achievements
+  recentAchievements: {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+  }[];
+
+  // Improvement areas
+  improvementAreas: { id: number; area: string; score: number }[];
+}
+
+export interface TeamAverages {
+  performanceScore: number;
+  taskCompletionRate: number;
+  qualityScore: number;
+  clientSatisfaction: number;
+  tasksCompleted: number;
+  projectsCompleted: number;
+  totalScore: number;
+}
+
+// Sample agent data
+export const agentData: AgentData = {
   id: 7,
   name: "Tom Holland",
   avatar: "/placeholder.svg?height=60&width=60",
@@ -12,7 +87,7 @@ export const agentData = {
 
   // Performance metrics
   performanceScore: 87,
-  performanceTrend: "up", // "up", "down", or "stable"
+  performanceTrend: "up",
   taskCompletionRate: 92,
   qualityScore: 89,
   clientSatisfaction: 4.7,
@@ -104,4 +179,15 @@ export const agentData = {
     { id: 2, area: "Content Strategy", score: 78 },
     { id: 3, area: "Team Collaboration", score: 81 },
   ],
+};
+
+// Team averages for comparison
+export const teamAverages: TeamAverages = {
+  performanceScore: 82,
+  taskCompletionRate: 88,
+  qualityScore: 85,
+  clientSatisfaction: 4.3,
+  tasksCompleted: 310,
+  projectsCompleted: 24,
+  totalScore: 3800,
 };
