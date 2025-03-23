@@ -16,6 +16,7 @@ import {
   PieChart,
   Plus,
   User,
+  MessageSquare,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -68,13 +69,18 @@ import { AgentPerformanceChart } from "@/components/charts/agent-performance-cha
 
 export function ClientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedTaskForComment, setSelectedTaskForComment] = useState(null);
+  const [selectedTaskForReport, setSelectedTaskForReport] = useState(null);
+  const [commentText, setCommentText] = useState("");
+  const [reportText, setReportText] = useState("");
+  const [reportType, setReportType] = useState("");
 
   return (
-    <div className=" md:p-8">
+    <div className="container mx-auto p-4 md:p-8">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight pb-4">
+            <h1 className="text-3xl font-bold tracking-tight">
               Client Dashboard
             </h1>
             <p className="text-muted-foreground">
@@ -123,10 +129,10 @@ export function ClientDashboard() {
             </DropdownMenu>
             <Dialog>
               <DialogTrigger asChild>
-                {/* <Button size="sm" className="h-8 gap-1">
+                <Button size="sm" className="h-8 gap-1">
                   <Plus className="h-3.5 w-3.5" />
                   <span>New Task</span>
-                </Button> */}
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -657,10 +663,10 @@ export function ClientDashboard() {
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
-                        {/* <Button size="sm" className="h-8 gap-1">
+                        <Button size="sm" className="h-8 gap-1">
                           <Plus className="h-3.5 w-3.5" />
                           <span>Add Task</span>
-                        </Button> */}
+                        </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -1034,13 +1040,37 @@ export function ClientDashboard() {
                               <User className="h-3.5 w-3.5" />
                               <span>{task.agent}</span>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">More options</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    setSelectedTaskForComment(task)
+                                  }
+                                >
+                                  <MessageSquare className="mr-2 h-4 w-4" />
+                                  <span>Add Comment</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    setSelectedTaskForReport(task)
+                                  }
+                                  className="text-red-600 focus:bg-red-50 focus:text-red-700"
+                                >
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  <span>Add Report</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       ))}
@@ -1099,13 +1129,37 @@ export function ClientDashboard() {
                               <User className="h-3.5 w-3.5" />
                               <span>{task.agent}</span>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">More options</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    setSelectedTaskForComment(task)
+                                  }
+                                >
+                                  <MessageSquare className="mr-2 h-4 w-4" />
+                                  <span>Add Comment</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    setSelectedTaskForReport(task)
+                                  }
+                                  className="text-red-600 focus:bg-red-50 focus:text-red-700"
+                                >
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  <span>Add Report</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       ))}
@@ -1121,6 +1175,115 @@ export function ClientDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        {/* Comment Modal */}
+        <Dialog
+          open={selectedTaskForComment !== null}
+          onOpenChange={(open) => !open && setSelectedTaskForComment(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Comment</DialogTitle>
+              <DialogDescription>
+                Add a comment to the task: {selectedTaskForComment?.title}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="comment">Your Comment</Label>
+                <Textarea
+                  id="comment"
+                  placeholder="Enter your comment here..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSelectedTaskForComment(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  // Here you would typically save the comment
+                  console.log("Comment added:", commentText);
+                  setCommentText("");
+                  setSelectedTaskForComment(null);
+                }}
+              >
+                Submit Comment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Report Modal */}
+        <Dialog
+          open={selectedTaskForReport !== null}
+          onOpenChange={(open) => !open && setSelectedTaskForReport(null)}
+        >
+          <DialogContent className="border-red-200">
+            <DialogHeader className="border-b border-red-100 pb-3">
+              <DialogTitle className="text-red-600">Add Report</DialogTitle>
+              <DialogDescription>
+                Submit a report for the task: {selectedTaskForReport?.title}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="report-type">Report Type</Label>
+                <Select value={reportType} onValueChange={setReportType}>
+                  <SelectTrigger
+                    id="report-type"
+                    className="border-red-200 focus:ring-red-500"
+                  >
+                    <SelectValue placeholder="Select report type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="progress">Progress Report</SelectItem>
+                    <SelectItem value="issue">Issue Report</SelectItem>
+                    <SelectItem value="feedback">Feedback Report</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="report-details">Report Details</Label>
+                <Textarea
+                  id="report-details"
+                  placeholder="Enter report details..."
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                  className="min-h-[120px] border-red-200 focus-visible:ring-red-500"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSelectedTaskForReport(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-red-600 hover:bg-red-700"
+                onClick={() => {
+                  // Here you would typically save the report
+                  console.log("Report added:", {
+                    type: reportType,
+                    details: reportText,
+                  });
+                  setReportType("");
+                  setReportText("");
+                  setSelectedTaskForReport(null);
+                }}
+              >
+                Submit Report
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
