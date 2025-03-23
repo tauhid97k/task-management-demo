@@ -31,97 +31,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Mock data for recent activity
-const recentActivity = [
-  {
-    id: 1,
-    user: "Alice Johnson",
-    action: "Completed task",
-    item: "Facebook Campaign",
-    time: "2 hours ago",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: 2,
-    user: "Bob Smith",
-    action: "Assigned to",
-    item: "Website Redesign",
-    time: "3 hours ago",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: 3,
-    user: "Charlie Davis",
-    action: "Created template",
-    item: "Email Newsletter",
-    time: "5 hours ago",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: 4,
-    user: "Diana Miller",
-    action: "Updated status",
-    item: "Social Media Calendar",
-    time: "Yesterday",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: 5,
-    user: "Edward Wilson",
-    action: "Added client",
-    item: "Birds Of Eden Corporation",
-    time: "Yesterday",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-];
-
-// Mock data for top performers
-const topPerformers = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    role: "Social Media Manager",
-    completed: 37,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 2,
-    name: "Frank Thomas",
-    role: "Graphic Designer",
-    completed: 32,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 3,
-    name: "Diana Miller",
-    role: "Content Creator",
-    completed: 29,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 4,
-    name: "Henry Clark",
-    role: "Video Editor",
-    completed: 26,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-];
-
-// Project status data
-const projectStatusData = {
-  completed: 45,
-  inProgress: 30,
-  pending: 25,
-};
-
-// Team workload data
-const teamWorkloadData = [
-  { name: "Social Team", tasks: 78 },
-  { name: "Design Team", tasks: 65 },
-  { name: "Content Team", tasks: 83 },
-  { name: "Development", tasks: 47 },
-  { name: "Marketing", tasks: 53 },
-];
+// Import data from data folder
+import {
+  recentActivity,
+  topPerformers,
+  projectStatusData,
+  teamWorkloadData,
+  teamEfficiencyData,
+  clientSatisfactionData,
+  revenuePackageData,
+  weeklyTaskStatusData,
+} from "@/Data/dashboard-data";
 
 export function SimpleOverviewDashboard() {
   const [timeRange, setTimeRange] = useState("month");
@@ -223,59 +143,25 @@ export function SimpleOverviewDashboard() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-6 mt-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Week 6</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      71 Completed
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                      19 In Progress
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                      15 Pending
-                    </span>
+              {weeklyTaskStatusData.map((week) => (
+                <div key={week.week} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">{week.week}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                        {week.completed} Completed
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                        {week.inProgress} In Progress
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                        {week.pending} Pending
+                      </span>
+                    </div>
                   </div>
+                  <Progress value={week.completed} className="h-2" />
                 </div>
-                <Progress value={71} className="h-2" />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Week 5</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      58 Completed
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                      17 In Progress
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                      20 Pending
-                    </span>
-                  </div>
-                </div>
-                <Progress value={58} className="h-2" />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Week 4</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      63 Completed
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                      21 In Progress
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                      18 Pending
-                    </span>
-                  </div>
-                </div>
-                <Progress value={63} className="h-2" />
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -475,13 +361,7 @@ export function SimpleOverviewDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 mt-2">
-                  {[
-                    { team: "Social", days: 2.3 },
-                    { team: "Design", days: 3.7 },
-                    { team: "Content", days: 2.8 },
-                    { team: "Development", days: 4.2 },
-                    { team: "Marketing", days: 3.1 },
-                  ].map((item) => (
+                  {teamEfficiencyData.map((item) => (
                     <div
                       key={item.team}
                       className="flex items-center justify-between"
@@ -536,13 +416,7 @@ export function SimpleOverviewDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 mt-2">
-                  {[
-                    { service: "Social Media", rating: 4.7 },
-                    { service: "Web Design", rating: 4.5 },
-                    { service: "Content", rating: 4.8 },
-                    { service: "SEO", rating: 4.3 },
-                    { service: "Branding", rating: 4.6 },
-                  ].map((item) => (
+                  {clientSatisfactionData.map((item) => (
                     <div key={item.service} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm">{item.service}</span>
@@ -607,13 +481,7 @@ export function SimpleOverviewDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { name: "DFP90", value: 25, color: "bg-blue-500" },
-                    { name: "DFP120", value: 15, color: "bg-emerald-500" },
-                    { name: "DFP240", value: 20, color: "bg-amber-500" },
-                    { name: "DFP270", value: 20, color: "bg-indigo-500" },
-                    { name: "DFP360", value: 20, color: "bg-pink-500" },
-                  ].map((pkg) => (
+                  {revenuePackageData.map((pkg) => (
                     <div key={pkg.name} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
