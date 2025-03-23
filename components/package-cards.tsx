@@ -9,7 +9,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Check, Eye, Info, Plus } from "lucide-react";
-import { AddPackageModal2 } from "@/components/add-package-modal-2";
+import { AddPackageModal } from "@/components/add-package-modal";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { PackageDetailsModal } from "@/components/package-details-modal";
@@ -155,7 +155,7 @@ export function PackageCards() {
         ))}
       </div>
 
-      <AddPackageModal2
+      <AddPackageModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={addPackage}
