@@ -1,24 +1,20 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
-interface AddPackageModalProps {
+interface AddPackageModal2Props {
   isOpen: boolean;
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAdd: (newPackage: any) => void;
 }
 
@@ -26,146 +22,141 @@ export function AddPackageModal({
   isOpen,
   onClose,
   onAdd,
-}: AddPackageModalProps) {
-  const [newPackage, setNewPackage] = useState({
-    id: "",
-    subscriptions: 0,
-    days: 0,
-    socialSites: 0,
-    web2Sites: 0,
-    additionalAssets: 10,
-    monthlyEngagement: 1,
-    domain: "1",
-  });
+}: AddPackageModal2Props) {
+  const [id, setId] = useState("");
+  const [subscriptions, setSubscriptions] = useState(0);
+  const [days, setDays] = useState(0);
+  const [socialSites, setSocialSites] = useState(0);
+  const [web2Sites, setWeb2Sites] = useState(0);
+  const [additionalAssets, setAdditionalAssets] = useState(0);
+  const [monthlyEngagement, setMonthlyEngagement] = useState(0);
+  const [domain, setDomain] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewPackage({
-      ...newPackage,
-      [name]: name === "id" ? value : Number.parseInt(value) || 0,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    const newPackage = {
+      id,
+      subscriptions: Number(subscriptions),
+      days: Number(days),
+      socialSites: Number(socialSites),
+      web2Sites: Number(web2Sites),
+      additionalAssets: Number(additionalAssets),
+      monthlyEngagement: Number(monthlyEngagement),
+      domain,
+    };
     onAdd(newPackage);
-    setNewPackage({
-      id: "",
-      subscriptions: 0,
-      days: 0,
-      socialSites: 0,
-      web2Sites: 0,
-      additionalAssets: 10,
-      monthlyEngagement: 1,
-      domain: "1",
-    });
+    onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>Add New Package</DialogTitle>
-          <DialogDescription>
-            Create a new subscription package with the details below.
-          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="id" className="text-right">
-                Package ID
-              </Label>
-              <Input
-                id="id"
-                name="id"
-                placeholder="DFP123"
-                value={newPackage.id}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="subscriptions" className="text-right">
-                Subscriptions
-              </Label>
-              <Input
-                id="subscriptions"
-                name="subscriptions"
-                type="number"
-                value={newPackage.subscriptions || ""}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="days" className="text-right">
-                Days
-              </Label>
-              <Input
-                id="days"
-                name="days"
-                type="number"
-                value={newPackage.days || ""}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="socialSites" className="text-right">
-                Social Sites
-              </Label>
-              <Input
-                id="socialSites"
-                name="socialSites"
-                type="number"
-                value={newPackage.socialSites || ""}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="web2Sites" className="text-right">
-                Web 2.0 Sites
-              </Label>
-              <Input
-                id="web2Sites"
-                name="web2Sites"
-                type="number"
-                value={newPackage.web2Sites || ""}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="domain" className="text-right">
-                Domain
-              </Label>
-              <Input
-                id="domain"
-                name="domain"
-                placeholder="1, 2/3, or 3 or more"
-                value={newPackage.domain}
-                onChange={(e) =>
-                  setNewPackage({ ...newPackage, domain: e.target.value })
-                }
-                className="col-span-3"
-                required
-              />
-            </div>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="id" className="text-right">
+              ID
+            </Label>
+            <Input
+              id="id"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              className="col-span-3"
+            />
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">Add Package</Button>
-          </DialogFooter>
-        </form>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="subscriptions" className="text-right">
+              Subscriptions
+            </Label>
+            <Input
+              type="number"
+              id="subscriptions"
+              value={subscriptions}
+              onChange={(e) => setSubscriptions(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="days" className="text-right">
+              Days
+            </Label>
+            <Input
+              type="number"
+              id="days"
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="socialSites" className="text-right">
+              Social Sites
+            </Label>
+            <Input
+              type="number"
+              id="socialSites"
+              value={socialSites}
+              onChange={(e) => setSocialSites(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="web2Sites" className="text-right">
+              Web2 Sites
+            </Label>
+            <Input
+              type="number"
+              id="web2Sites"
+              value={web2Sites}
+              onChange={(e) => setWeb2Sites(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="additionalAssets" className="text-right">
+              Additional Assets
+            </Label>
+            <Input
+              type="number"
+              id="additionalAssets"
+              value={additionalAssets}
+              onChange={(e) => setAdditionalAssets(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="monthlyEngagement" className="text-right">
+              Monthly Engagement
+            </Label>
+            <Input
+              type="number"
+              id="monthlyEngagement"
+              value={monthlyEngagement}
+              onChange={(e) => setMonthlyEngagement(Number(e.target.value))}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="domain" className="text-right">
+              Domain
+            </Label>
+            <Input
+              id="domain"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" onClick={handleSubmit}>
+            Add Package
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
