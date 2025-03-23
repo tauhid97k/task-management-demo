@@ -129,10 +129,10 @@ export function ClientDashboard() {
             </DropdownMenu>
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-8 gap-1">
+                {/* <Button size="sm" className="h-8 gap-1">
                   <Plus className="h-3.5 w-3.5" />
                   <span>New Task</span>
-                </Button>
+                </Button> */}
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -663,10 +663,10 @@ export function ClientDashboard() {
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" className="h-8 gap-1">
+                        {/* <Button size="sm" className="h-8 gap-1">
                           <Plus className="h-3.5 w-3.5" />
                           <span>Add Task</span>
-                        </Button>
+                        </Button> */}
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
