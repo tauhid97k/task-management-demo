@@ -406,7 +406,7 @@ export default function TemplatesPage() {
   };
 
   const handleViewTasks = (templateId: string) => {
-    router.push(`/admin/packages/${packageId}/templates/${templateId}/tasks`);
+    router.push(`/admin/packages/${packageId}/templates/${templateId}`);
   };
 
   const filteredAgents = selectedTemplate
@@ -516,9 +516,10 @@ export default function TemplatesPage() {
       </div>
 
       {/* View Agents Modal */}
+
       {selectedTemplate && (
         <Dialog open={isAgentsModalOpen} onOpenChange={setIsAgentsModalOpen}>
-          <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogContent className="max-w-[800px]">
             <DialogHeader>
               <DialogTitle className="text-xl">
                 Team Members - {selectedTemplate.name}
@@ -554,8 +555,8 @@ export default function TemplatesPage() {
               </Tabs>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-2 pb-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex-1 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredAgents.length === 0 ? (
                   <div className="col-span-full text-center py-8 text-gray-500">
                     No team members found matching your criteria.
