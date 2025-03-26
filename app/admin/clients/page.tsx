@@ -854,7 +854,7 @@ function ClientCard({
                 : "Pending"}
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
-              Package: {client.packageType}
+              Package: {client.package}
             </Badge>
           </div>
         </div>
