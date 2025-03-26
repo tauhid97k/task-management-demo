@@ -13,11 +13,16 @@ import {
   LineChart,
   MoreHorizontal,
   Package,
+  Calendar,
+  Users,
   PieChart,
-  Plus,
   User,
   MessageSquare,
 } from "lucide-react";
+
+import { TaskCard } from "@/components/task-card";
+import { WorkflowStages } from "@/components/workflow-stages";
+import { ClientStats } from "@/components/client-stats";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -67,7 +72,66 @@ import { CategoryDistributionChart } from "@/components/charts/category-distribu
 import { TaskTrendChart } from "@/components/charts/task-trend-chart";
 import { AgentPerformanceChart } from "@/components/charts/agent-performance-chart";
 
+// Sample data
+const initialTasks = [
+  {
+    id: 1,
+    title: "Create social media graphics",
+    dueDate: "2025-04-02",
+    priority: "High",
+    status: "Pending",
+    assignedTo: null,
+  },
+  {
+    id: 2,
+    title: "Design new banner ads",
+    dueDate: "2025-04-05",
+    priority: "Medium",
+    status: "Pending",
+    assignedTo: null,
+  },
+  {
+    id: 3,
+    title: "Update product photos",
+    dueDate: "2025-04-10",
+    priority: "Low",
+    status: "Pending",
+    assignedTo: null,
+  },
+  {
+    id: 4,
+    title: "Create promotional video",
+    dueDate: "2025-04-15",
+    priority: "High",
+    status: "Pending",
+    assignedTo: null,
+  },
+];
+
+const employees = [
+  { id: 1, name: "Alex Kim", avatar: "/placeholder.svg?height=40&width=40" },
+  { id: 2, name: "Jamie Smith", avatar: "/placeholder.svg?height=40&width=40" },
+  { id: 3, name: "Taylor Wong", avatar: "/placeholder.svg?height=40&width=40" },
+  { id: 4, name: "Jordan Lee", avatar: "/placeholder.svg?height=40&width=40" },
+];
+
+const clientData = {
+  name: "Acme Corporation",
+  package: "DFP120",
+  tasksPerMonth: 3,
+  tasksCompleted: 1,
+  nextTaskDate: "2025-04-10",
+  daysUntilNextTask: 15,
+};
+
+const workflowData = {
+  assets: { total: 12, completed: 8 },
+  socialMedia: { total: 8, completed: 3 },
+  review: { total: 5, completed: 1 },
+};
+
 export function ClientDashboard() {
+  const [tasks, setTasks] = useState(initialTasks);
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedTaskForComment, setSelectedTaskForComment] = useState(null);
   const [selectedTaskForReport, setSelectedTaskForReport] = useState(null);
@@ -75,17 +139,102 @@ export function ClientDashboard() {
   const [reportText, setReportText] = useState("");
   const [reportType, setReportType] = useState("");
 
+  const distributeTasks = () => {
+    const updatedTasks = tasks.map((task) => {
+      if (!task.assignedTo) {
+        // Randomly assign an employee
+        const randomEmployee =
+          employees[Math.floor(Math.random() * employees.length)];
+        return { ...task, assignedTo: randomEmployee };
+      }
+      return task;
+    });
+
+    setTasks(updatedTasks);
+  };
+
   return (
     <div className="p-3">
-      <div className="flex flex-col gap-6">
+      {/* Task Distribution Start */}
+      <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Client Dashboard</h1>
+          <p className="text-muted-foreground">
+            Manage tasks and track workflow progress
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle>Tasks</CardTitle>
+              <Button onClick={distributeTasks}>
+                <Users className="mr-2 h-4 w-4" />
+                Distribute Tasks
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {tasks.map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Package Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center">
+                <Package className="h-5 w-5 mr-2 text-primary" />
+                <span className="font-medium">
+                  {clientData.package} Package
+                </span>
+              </div>
+
+              <div className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2 text-primary" />
+                <span>{clientData.tasksPerMonth} tasks per month</span>
+              </div>
+
+              <div className="flex items-center">
+                <CheckCircle2 className="h-5 w-5 mr-2 text-primary" />
+                <span>
+                  {clientData.tasksCompleted}/{clientData.tasksPerMonth} tasks
+                  completed
+                </span>
+              </div>
+
+              <div className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-primary" />
+                <span>Next task in {clientData.daysUntilNextTask} days</span>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Badge variant="outline" className="w-full justify-center py-2">
+                Next task: {clientData.nextTaskDate}
+              </Badge>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+
+      <div className="mb-10">
+        <WorkflowStages workflowData={workflowData} />
+      </div>
+      {/* Task Distribution End */}
+
+      <div className="flex flex-col gap-6 mt-10">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Client Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your tasks, track progress, and view package details
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
+            <p className="text-muted-foreground"></p>
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
