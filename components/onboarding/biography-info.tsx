@@ -56,6 +56,9 @@ When I'm not working, you can find me exploring nature trails, experimenting wit
           </Button>
         </div>
 
+        <div className="flex items-center gap-2">
+          <h2>Biography 1</h2>
+        </div>
         <div className="relative min-h-[300px] border rounded-md">
           <div className="absolute inset-0 overflow-auto p-4">
             <div
@@ -68,6 +71,53 @@ When I'm not working, you can find me exploring nature trails, experimenting wit
               dangerouslySetInnerHTML={{ __html: formData.biography }}
             />
           </div>
+        </div>
+        <div className="flex items-center justify-end">
+          <Button variant="outline" onClick={onNext}>
+            Choose as Primary
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <h2>Biography 2</h2>
+        </div>
+        <div className="relative min-h-[300px] border rounded-md">
+          <div className="absolute inset-0 overflow-auto p-4">
+            <div
+              className="prose prose-sm max-w-none h-full p-4"
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) =>
+                updateFormData({ biography: e.currentTarget.innerHTML })
+              }
+              dangerouslySetInnerHTML={{ __html: formData.biography }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end">
+          <Button variant="outline" onClick={onNext}>
+            Choose as Primary
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <h2>Biography 3</h2>
+        </div>
+        <div className="relative min-h-[300px] border rounded-md">
+          <div className="absolute inset-0 overflow-auto p-4">
+            <div
+              className="prose prose-sm max-w-none h-full p-4"
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) =>
+                updateFormData({ biography: e.currentTarget.innerHTML })
+              }
+              dangerouslySetInnerHTML={{ __html: formData.biography }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end">
+          <Button variant="outline" onClick={onNext}>
+            Choose as Primary
+          </Button>
         </div>
       </div>
 
