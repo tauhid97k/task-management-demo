@@ -1180,7 +1180,7 @@ export function ClientDashboard() {
           open={selectedTaskForComment !== null}
           onOpenChange={(open) => !open && setSelectedTaskForComment(null)}
         >
-          <DialogContent>
+          <DialogContent className="w-[500px]">
             <DialogHeader>
               <DialogTitle>Add Comment</DialogTitle>
               <DialogDescription>
@@ -1224,7 +1224,7 @@ export function ClientDashboard() {
           open={selectedTaskForReport !== null}
           onOpenChange={(open) => !open && setSelectedTaskForReport(null)}
         >
-          <DialogContent className="border-red-200">
+          <DialogContent className="border-red-200 w-[500px]">
             <DialogHeader className="border-b border-red-100 pb-3">
               <DialogTitle className="text-red-600">Add Report</DialogTitle>
               <DialogDescription>
