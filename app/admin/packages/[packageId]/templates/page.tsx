@@ -692,7 +692,6 @@ export default function TemplatesPage() {
 
 function TemplateCard({
   template,
-  packageId,
   onViewAgents,
   onViewTasks,
 }: {

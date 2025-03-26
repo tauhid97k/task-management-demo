@@ -63,6 +63,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             roles: ["admin"],
           },
           {
+            title: "Clients",
+            url: "/admin/clients",
+            roles: ["admin"],
+          },
+          {
             title: "Packages",
             url: "/admin/packages",
             roles: ["admin"],
