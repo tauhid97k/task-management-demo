@@ -64,9 +64,7 @@ export default function OnboardingPage() {
   };
 
   const handleComplete = () => {
-    // Here you would typically submit the data to your backend
-    console.log("Form submitted:", formData);
-    router.push("/admin");
+    router.push("/client");
   };
 
   const updateFormData = (data: Partial<typeof formData>) => {
