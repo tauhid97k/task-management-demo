@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowDownToLine,
   ArrowUpDown,
@@ -18,11 +18,14 @@ import {
   PieChart,
   User,
   MessageSquare,
+  Search,
+  Wand2,
+  Loader2,
+  BriefcaseIcon,
 } from "lucide-react";
 
 import { TaskCard } from "@/components/task-card";
 import { WorkflowStages } from "@/components/workflow-stages";
-import { ClientStats } from "@/components/client-stats";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -81,6 +84,8 @@ const initialTasks = [
     priority: "High",
     status: "Pending",
     assignedTo: null,
+    category: "design",
+    progress: 0,
   },
   {
     id: 2,
@@ -89,6 +94,8 @@ const initialTasks = [
     priority: "Medium",
     status: "Pending",
     assignedTo: null,
+    category: "design",
+    progress: 0,
   },
   {
     id: 3,
@@ -97,6 +104,8 @@ const initialTasks = [
     priority: "Low",
     status: "Pending",
     assignedTo: null,
+    category: "content",
+    progress: 0,
   },
   {
     id: 4,
@@ -105,14 +114,68 @@ const initialTasks = [
     priority: "High",
     status: "Pending",
     assignedTo: null,
+    category: "video",
+    progress: 0,
+  },
+  {
+    id: 5,
+    title: "Write blog post about new products",
+    dueDate: "2025-04-08",
+    priority: "Medium",
+    status: "Pending",
+    assignedTo: null,
+    category: "content",
+    progress: 0,
+  },
+  {
+    id: 6,
+    title: "Schedule social media posts",
+    dueDate: "2025-04-03",
+    priority: "High",
+    status: "Pending",
+    assignedTo: null,
+    category: "social",
+    progress: 0,
   },
 ];
 
 const employees = [
-  { id: 1, name: "Alex Kim", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 2, name: "Jamie Smith", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 3, name: "Taylor Wong", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 4, name: "Jordan Lee", avatar: "/placeholder.svg?height=40&width=40" },
+  {
+    id: 1,
+    name: "Alex Kim",
+    avatar: "/placeholder.svg?height=40&width=40",
+    role: "Social Media Specialist",
+    maxCapacity: 3,
+    assignedTasks: 0,
+    skills: ["social media", "content creation"],
+  },
+  {
+    id: 2,
+    name: "Jamie Smith",
+    avatar: "/placeholder.svg?height=40&width=40",
+    role: "Content Writer",
+    maxCapacity: 2,
+    assignedTasks: 0,
+    skills: ["writing", "editing", "research"],
+  },
+  {
+    id: 3,
+    name: "Taylor Wong",
+    avatar: "/placeholder.svg?height=40&width=40",
+    role: "Graphic Designer",
+    maxCapacity: 3,
+    assignedTasks: 0,
+    skills: ["design", "photography", "illustration"],
+  },
+  {
+    id: 4,
+    name: "Jordan Lee",
+    avatar: "/placeholder.svg?height=40&width=40",
+    role: "Video Producer",
+    maxCapacity: 2,
+    assignedTasks: 0,
+    skills: ["video editing", "animation"],
+  },
 ];
 
 const clientData = {
@@ -138,91 +201,474 @@ export function ClientDashboard() {
   const [commentText, setCommentText] = useState("");
   const [reportText, setReportText] = useState("");
   const [reportType, setReportType] = useState("");
+  const [employeeList, setEmployeeList] = useState(employees);
+  const [isDistributing, setIsDistributing] = useState(false);
+  const [employeeFilter, setEmployeeFilter] = useState("all");
+  const [taskSearch, setTaskSearch] = useState("");
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [distributionProgress, setDistributionProgress] = useState(0);
+  const [showDistributionProgress, setShowDistributionProgress] =
+    useState(false);
 
-  const distributeTasks = () => {
-    const updatedTasks = tasks.map((task) => {
-      if (!task.assignedTo) {
-        // Randomly assign an employee
-        const randomEmployee =
-          employees[Math.floor(Math.random() * employees.length)];
-        return { ...task, assignedTo: randomEmployee };
-      }
-      return task;
+  // Update employee assigned tasks count
+  useEffect(() => {
+    const updatedEmployees = employeeList.map((employee) => {
+      const assignedCount = tasks.filter(
+        (task) => task.assignedTo && task.assignedTo.id === employee.id
+      ).length;
+
+      return {
+        ...employee,
+        assignedTasks: assignedCount,
+      };
     });
 
-    setTasks(updatedTasks);
+    setEmployeeList(updatedEmployees);
+  }, [tasks]);
+
+  // Filter employees based on search and availability
+  const filteredEmployees = employeeList.filter((employee) => {
+    // Filter by search
+    if (
+      employeeSearch &&
+      !employee.name.toLowerCase().includes(employeeSearch.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Filter by availability
+    if (
+      employeeFilter === "free" &&
+      employee.assignedTasks >= employee.maxCapacity
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Filter tasks based on search
+  const filteredTasks = tasks.filter((task) => {
+    if (
+      taskSearch &&
+      !task.title.toLowerCase().includes(taskSearch.toLowerCase())
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  // Calculate skill match between employee and task
+  const getSkillMatch = (employee, taskCategory) => {
+    const categorySkillMap = {
+      design: ["design", "illustration", "photography"],
+      content: ["writing", "editing", "research"],
+      social: ["social media", "content creation"],
+      video: ["video editing", "animation"],
+    };
+
+    const taskSkills = categorySkillMap[taskCategory] || [];
+    const matchingSkills = employee.skills.filter((skill) =>
+      taskSkills.includes(skill)
+    );
+
+    return matchingSkills.length > 0
+      ? Math.round((matchingSkills.length / taskSkills.length) * 100)
+      : 0;
+  };
+
+  // Distribute tasks automatically using AI-like algorithm
+  const distributeTasksAutomatically = () => {
+    setIsDistributing(true);
+    setShowDistributionProgress(true);
+    setDistributionProgress(0);
+
+    // Create copies of current state
+    const updatedTasks = [...tasks];
+    const updatedEmployees = [...employeeList];
+
+    // Get unassigned tasks
+    const unassignedTasks = updatedTasks.filter((task) => !task.assignedTo);
+
+    // Sort tasks by priority (High > Medium > Low)
+    unassignedTasks.sort((a, b) => {
+      const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+
+    // Simulate AI distribution with progress
+    let currentProgress = 0;
+    const progressIncrement = 100 / unassignedTasks.length;
+
+    const distributeNextTask = (index) => {
+      if (index >= unassignedTasks.length) {
+        // All tasks distributed
+        setTimeout(() => {
+          setTasks(updatedTasks);
+          setEmployeeList(updatedEmployees);
+          setIsDistributing(false);
+          setDistributionProgress(100);
+
+          // Hide progress bar after a delay
+          setTimeout(() => {
+            setShowDistributionProgress(false);
+          }, 1500);
+        }, 500);
+        return;
+      }
+
+      const task = unassignedTasks[index];
+      const taskIndex = updatedTasks.findIndex((t) => t.id === task.id);
+
+      // Find available employees
+      const availableEmployees = updatedEmployees.filter(
+        (emp) => emp.assignedTasks < emp.maxCapacity
+      );
+
+      if (availableEmployees.length > 0) {
+        // Find best match based on skills and workload
+        const scoredEmployees = availableEmployees.map((emp) => {
+          const skillMatch = getSkillMatch(emp, task.category);
+          const workloadScore = (emp.maxCapacity - emp.assignedTasks) * 20;
+
+          return {
+            employee: emp,
+            score: skillMatch + workloadScore,
+          };
+        });
+
+        // Sort by score (highest first)
+        scoredEmployees.sort((a, b) => b.score - a.score);
+
+        // Assign to best match
+        const bestMatch = scoredEmployees[0].employee;
+        updatedTasks[taskIndex].assignedTo = bestMatch;
+        updatedTasks[taskIndex].status = "In Progress";
+        updatedTasks[taskIndex].progress = 10;
+
+        // Update employee's assigned tasks count
+        const empIndex = updatedEmployees.findIndex(
+          (e) => e.id === bestMatch.id
+        );
+        updatedEmployees[empIndex].assignedTasks += 1;
+      }
+
+      // Update progress
+      currentProgress += progressIncrement;
+      setDistributionProgress(Math.min(Math.round(currentProgress), 95));
+
+      // Process next task with delay to show progress
+      setTimeout(() => distributeNextTask(index + 1), 300);
+    };
+
+    // Start distribution process
+    setTimeout(() => distributeNextTask(0), 500);
   };
 
   return (
     <div className="p-3">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Client Dashboard</h1>
+        <p className="text-muted-foreground">
+          Manage tasks and track workflow progress
+        </p>
+      </div>
+      <div className="max-w-xl mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Package Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center">
+              <Package className="h-5 w-5 mr-2 text-primary" />
+              <span className="font-medium">{clientData.package} Package</span>
+            </div>
+
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 mr-2 text-primary" />
+              <span>{clientData.tasksPerMonth} tasks per month</span>
+            </div>
+
+            <div className="flex items-center">
+              <CheckCircle2 className="h-5 w-5 mr-2 text-primary" />
+              <span>
+                {clientData.tasksCompleted}/{clientData.tasksPerMonth} tasks
+                completed
+              </span>
+            </div>
+
+            <div className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-primary" />
+              <span>Next task in {clientData.daysUntilNextTask} days</span>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Badge variant="outline" className="w-full justify-center py-2">
+              Next task: {clientData.nextTaskDate}
+            </Badge>
+          </CardFooter>
+        </Card>
+      </div>
       {/* Task Distribution Start */}
       <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-6">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Client Dashboard</h1>
-          <p className="text-muted-foreground">
-            Manage tasks and track workflow progress
-          </p>
-        </div>
+        {showDistributionProgress && (
+          <div className="w-full md:w-64">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-medium">Distribution Progress</span>
+              <span className="text-sm font-medium">
+                {distributionProgress}%
+              </span>
+            </div>
+            <Progress value={distributionProgress} className="h-2" />
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>Tasks</CardTitle>
-              <Button onClick={distributeTasks}>
-                <Users className="mr-2 h-4 w-4" />
-                Distribute Tasks
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        {/* Tasks List */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>Tasks</CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search tasks..."
+                  className="pl-8 h-9 w-[180px] md:w-[200px]"
+                  value={taskSearch}
+                  onChange={(e) => setTaskSearch(e.target.value)}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="max-h-[400px] overflow-y-auto">
+              {filteredTasks.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                  <FileText className="h-10 w-10 mb-2 opacity-20" />
+                  <p>No tasks found</p>
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {filteredTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="p-4 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              task.priority === "High"
+                                ? "destructive"
+                                : task.priority === "Medium"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="text-xs"
+                          >
+                            {task.priority}
+                          </Badge>
+                          <h3 className="font-medium">{task.title}</h3>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={
+                            task.status === "Completed"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : task.status === "In Progress"
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : "bg-amber-50 text-amber-700 border-amber-200"
+                          }
+                        >
+                          {task.status}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" />
+                          <span>
+                            Due: {new Date(task.dueDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <BriefcaseIcon className="h-3.5 w-3.5" />
+                          <span className="capitalize">{task.category}</span>
+                        </div>
+                      </div>
+
+                      {task.assignedTo ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage
+                                src={task.assignedTo.avatar}
+                                alt={task.assignedTo.name}
+                              />
+                              <AvatarFallback>
+                                {task.assignedTo.name.substring(0, 2)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">
+                              {task.assignedTo.name}
+                            </span>
+                          </div>
+                          <div className="w-24">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Progress</span>
+                              <span>{task.progress}%</span>
+                            </div>
+                            <Progress value={task.progress} className="h-1.5" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-sm text-red-500 font-medium">
+                          Not assigned
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Employees List */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>Team Members</CardTitle>
+            <div className="flex items-center gap-2">
+              <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
+                <SelectTrigger className="w-[130px] h-9">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Members</SelectItem>
+                  <SelectItem value="free">Available Slots</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search team..."
+                  className="pl-8 h-9 w-[180px]"
+                  value={employeeSearch}
+                  onChange={(e) => setEmployeeSearch(e.target.value)}
+                />
+              </div>
+
+              <Button
+                onClick={distributeTasksAutomatically}
+                disabled={isDistributing}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {isDistributing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Auto-Assign
+                  </>
+                )}
               </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tasks.map((task) => (
-                  <TaskCard key={task.id} task={task} />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="max-h-[400px] overflow-y-auto">
+              {filteredEmployees.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                  <Users className="h-10 w-10 mb-2 opacity-20" />
+                  <p>No team members found</p>
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {filteredEmployees.map((employee) => (
+                    <div
+                      key={employee.id}
+                      className="p-4 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage
+                              src={employee.avatar}
+                              alt={employee.name}
+                            />
+                            <AvatarFallback>
+                              {employee.name.substring(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-medium">{employee.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {employee.role}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={
+                            employee.assignedTasks === 0
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : employee.assignedTasks < employee.maxCapacity
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : "bg-red-50 text-red-700 border-red-200"
+                          }
+                        >
+                          {employee.assignedTasks === 0
+                            ? "Free"
+                            : employee.assignedTasks < employee.maxCapacity
+                            ? `${
+                                employee.maxCapacity - employee.assignedTasks
+                              } slots free`
+                            : "Fully booked"}
+                        </Badge>
+                      </div>
 
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Package Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center">
-                <Package className="h-5 w-5 mr-2 text-primary" />
-                <span className="font-medium">
-                  {clientData.package} Package
-                </span>
-              </div>
+                      <div className="mb-2">
+                        <div className="flex justify-between text-xs mb-1">
+                          <span>Workload</span>
+                          <span>
+                            {Math.round(
+                              (employee.assignedTasks / employee.maxCapacity) *
+                                100
+                            )}
+                            %
+                          </span>
+                        </div>
+                        <Progress
+                          value={
+                            (employee.assignedTasks / employee.maxCapacity) *
+                            100
+                          }
+                          className="h-1.5"
+                        />
+                      </div>
 
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2 text-primary" />
-                <span>{clientData.tasksPerMonth} tasks per month</span>
-              </div>
-
-              <div className="flex items-center">
-                <CheckCircle2 className="h-5 w-5 mr-2 text-primary" />
-                <span>
-                  {clientData.tasksCompleted}/{clientData.tasksPerMonth} tasks
-                  completed
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <Clock className="h-5 w-5 mr-2 text-primary" />
-                <span>Next task in {clientData.daysUntilNextTask} days</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Badge variant="outline" className="w-full justify-center py-2">
-                Next task: {clientData.nextTaskDate}
-              </Badge>
-            </CardFooter>
-          </Card>
-        </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {employee.skills.map((skill, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="mb-10">
