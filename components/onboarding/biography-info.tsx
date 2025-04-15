@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { StepProps } from "@/types/onboarding";
 import { Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 export function BiographyInfo({
   formData,
@@ -15,6 +16,24 @@ export function BiographyInfo({
 
   const handleGenerateBio = () => {
     setIsGenerating(true);
+    let progress = 0;
+
+    // Show initial toast
+    const toastId = toast.loading("Generating biography: 0% complete");
+
+    // Update progress every 2 seconds
+    const progressInterval = setInterval(() => {
+      progress += Math.floor(Math.random() * 15) + 5; // Random progress between 5-20%
+
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+      }
+
+      toast.loading(`Generating biography: ${progress}% complete`, {
+        id: toastId,
+      });
+    }, 2000);
 
     // Mock AI generation with a timeout
     setTimeout(() => {
@@ -26,7 +45,14 @@ When I'm not working, you can find me exploring nature trails, experimenting wit
 
       updateFormData({ biography: generatedBio });
       setIsGenerating(false);
-    }, 1500);
+      clearInterval(progressInterval);
+
+      // Show completion toast
+      toast.success("Your AI-generated biography is ready!", {
+        id: toastId,
+        duration: 5000,
+      });
+    }, 30000); // 30 seconds to simulate a longer generation process
   };
 
   return (

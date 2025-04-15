@@ -9,6 +9,7 @@ import { BiographyInfo } from "@/components/onboarding/biography-info";
 import { SocialMediaInfo } from "@/components/onboarding/social-media-info";
 import { ArticlesSelection } from "@/components/onboarding/articles-selection";
 import { ThankYou } from "@/components/onboarding/thank-you";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -76,7 +77,11 @@ export default function OnboardingPage() {
   return (
     <div className="bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <StepIndicator steps={steps} currentStep={currentStep} />
+        <StepIndicator
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={(stepId) => setCurrentStep(stepId)}
+        />
 
         <div className="bg-white shadow-lg rounded-lg p-6 mt-8">
           <CurrentStepComponent
@@ -89,6 +94,7 @@ export default function OnboardingPage() {
             isLastStep={currentStep === steps.length}
           />
         </div>
+        <Toaster />
       </div>
     </div>
   );

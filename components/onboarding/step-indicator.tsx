@@ -1,3 +1,5 @@
+"use client";
+
 import type React from "react";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,9 +13,14 @@ interface Step {
 interface StepIndicatorProps {
   steps: Step[];
   currentStep: number;
+  onStepClick?: (stepId: number) => void;
 }
 
-export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+export function StepIndicator({
+  steps,
+  currentStep,
+  onStepClick,
+}: StepIndicatorProps) {
   return (
     <nav aria-label="Progress">
       <ol role="list" className="flex items-center justify-center mb-20">
@@ -33,7 +40,13 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 >
                   <div className="h-0.5 w-full bg-primary" />
                 </div>
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                <div
+                  className="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary cursor-pointer"
+                  onClick={() => onStepClick && onStepClick(step.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Go to ${step.title} step`}
+                >
                   <CheckIcon
                     className="h-5 w-5 text-white"
                     aria-hidden="true"
@@ -77,7 +90,19 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                 </div>
               </>
             )}
-            <div className="absolute top-10 text-center text-sm font-medium text-gray-500">
+            <div
+              className={cn(
+                "absolute top-10 text-center text-sm font-medium",
+                step.id < currentStep
+                  ? "text-primary cursor-pointer hover:underline"
+                  : "text-gray-500"
+              )}
+              onClick={() =>
+                step.id < currentStep && onStepClick && onStepClick(step.id)
+              }
+              role={step.id < currentStep ? "button" : undefined}
+              tabIndex={step.id < currentStep ? 0 : undefined}
+            >
               {step.title}
             </div>
           </li>
