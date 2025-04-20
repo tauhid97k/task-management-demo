@@ -1,0 +1,27 @@
+{
+  "name": "",
+  "profilePicture": null,
+  "birthDate": "",
+  "clientType": "individual",
+  "companyName": "",
+  "companyAddress": "",
+  "companyWebsite": "",
+  "hasWebsite": false,
+  "websiteUrl": "",
+  "desiredDomain": "",
+  "biography": "",
+  "socialMedia": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "linkedin": "",
+    "youtube": "",
+    "tiktok": "",
+    "pinterest": "",
+    "reddit": "",
+    "snapchat": "",
+    "discord": ""
+  },
+  "selectedArticles": [],
+  "completedAt": "2025-04-19T07:04:14.421Z"
+}
