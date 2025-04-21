@@ -1,0 +1,58 @@
+[
+  {
+    "id": "client1",
+    "name": "John Smith",
+    "email": "john@example.com",
+    "company": "Birds Of Eden Corporation",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "active"
+  },
+  {
+    "id": "client2",
+    "name": "Sarah Johnson",
+    "email": "sarah@example.com",
+    "company": "TechStart Inc.",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "active"
+  },
+  {
+    "id": "client3",
+    "name": "Michael Brown",
+    "email": "michael@example.com",
+    "company": "Global Retail Solutions",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "inactive"
+  },
+  {
+    "id": "client4",
+    "name": "Jennifer Wilson",
+    "email": "jennifer@example.com",
+    "company": "Eco Friendly Products",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "pending"
+  },
+  {
+    "id": "client5",
+    "name": "Robert Garcia",
+    "email": "robert@example.com",
+    "company": "Digital Solutions Ltd",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "active"
+  },
+  {
+    "id": "client6",
+    "name": "Emily Davis",
+    "email": "emily@example.com",
+    "company": "Creative Marketing Agency",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "active"
+  },
+  {
+    "id": "client7",
+    "name": "David Wilson",
+    "email": "david@example.com",
+    "company": "Tech Innovations Inc.",
+    "avatar": "/placeholder.svg?height=40&width=40",
+    "status": "pending"
+  }
+]

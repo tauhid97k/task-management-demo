@@ -31,6 +31,7 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import Link from "next/link"
+import type { Template } from "@/lib/data"
 
 // Define the template form schema
 const templateFormSchema = z.object({
@@ -65,211 +66,6 @@ const templateFormSchema = z.object({
 
 type TemplateFormValues = z.infer<typeof templateFormSchema>
 
-// Mock data
-const generateTemplates = (packageId: string) => {
-  const templates = [
-    {
-      id: "template1",
-      name: "Standard Marketing Template",
-      description: "Default template for marketing clients",
-      createdAt: "2025-03-01",
-      updatedAt: "2025-03-15",
-      isDefault: true,
-      company: "Birds Of Eden Corporation",
-      designation: "Marketing Director",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 25,
-      status: "pending",
-      package: packageId,
-      packageType: "DFP90",
-      startDate: "2025-03-01",
-      dueDate: "2025-06-15",
-      totalTasks: 18,
-      completedTasks: 4,
-      pendingTasks: 10,
-      inProgressTasks: 4,
-      hasNewComments: true,
-      hasIssues: false,
-      teamMembers: [
-        {
-          id: "tm1",
-          name: "Alice Johnson",
-          email: "alice@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Social Media Manager",
-          team: "social",
-          assignedDate: "2025-03-05",
-          assignedTasks: 6,
-          completedTasks: 2,
-          lateTasks: 1,
-        },
-        {
-          id: "tm2",
-          name: "Bob Smith",
-          email: "bob@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Writer",
-          team: "content",
-          assignedDate: "2025-03-05",
-          assignedTasks: 5,
-          completedTasks: 1,
-          lateTasks: 0,
-        },
-      ],
-      socialSites: [
-        { name: "Facebook", url: "https://facebook.com", isRequired: true },
-        { name: "Twitter", url: "https://twitter.com", isRequired: true },
-        { name: "Instagram", url: "https://instagram.com", isRequired: true },
-        { name: "LinkedIn", url: "https://linkedin.com", isRequired: true },
-        { name: "Pinterest", url: "https://pinterest.com", isRequired: false },
-      ],
-      web2Sites: [
-        { name: "Medium", url: "https://medium.com", isRequired: true },
-        { name: "Blogger", url: "https://blogger.com", isRequired: true },
-        { name: "WordPress", url: "https://wordpress.com", isRequired: false },
-      ],
-      additionalAssets: [
-        { name: "Logo Design", description: "Company logo in vector format", isRequired: true },
-        { name: "Banner Images", description: "Social media banners", isRequired: true },
-        { name: "Brand Guidelines", description: "PDF document", isRequired: false },
-      ],
-    },
-    {
-      id: "template2",
-      name: "Tech Startup Template",
-      description: "Optimized for tech startups and SaaS companies",
-      createdAt: "2025-02-15",
-      updatedAt: "2025-02-28",
-      isDefault: false,
-      company: "TechStart Inc.",
-      designation: "CEO",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 60,
-      status: "in-progress",
-      package: packageId,
-      packageType: "DFP120",
-      startDate: "2025-02-15",
-      dueDate: "2025-05-30",
-      totalTasks: 15,
-      completedTasks: 9,
-      pendingTasks: 3,
-      inProgressTasks: 3,
-      hasNewComments: false,
-      hasIssues: true,
-      teamMembers: [
-        {
-          id: "tm4",
-          name: "David Wilson",
-          email: "david@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Project Manager",
-          team: "management",
-          assignedDate: "2025-02-20",
-          assignedTasks: 4,
-          completedTasks: 3,
-          lateTasks: 0,
-        },
-        {
-          id: "tm5",
-          name: "Emma Brown",
-          email: "emma@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Strategist",
-          team: "content",
-          assignedDate: "2025-02-20",
-          assignedTasks: 6,
-          completedTasks: 4,
-          lateTasks: 1,
-        },
-      ],
-      socialSites: [
-        { name: "Twitter", url: "https://twitter.com", isRequired: true },
-        { name: "LinkedIn", url: "https://linkedin.com", isRequired: true },
-        { name: "GitHub", url: "https://github.com", isRequired: true },
-        { name: "ProductHunt", url: "https://producthunt.com", isRequired: false },
-      ],
-      web2Sites: [
-        { name: "Medium", url: "https://medium.com", isRequired: true },
-        { name: "Dev.to", url: "https://dev.to", isRequired: true },
-        { name: "Hacker News", url: "https://news.ycombinator.com", isRequired: false },
-      ],
-      additionalAssets: [
-        { name: "Product Screenshots", description: "High-resolution product screenshots", isRequired: true },
-        { name: "Demo Videos", description: "Product demo videos", isRequired: true },
-        { name: "Technical Documentation", description: "API documentation", isRequired: false },
-      ],
-    },
-    {
-      id: "template3",
-      name: "E-commerce Package",
-      description: "Complete template for online stores and e-commerce businesses",
-      createdAt: "2025-01-10",
-      updatedAt: "2025-02-05",
-      isDefault: false,
-      company: "Global Retail Solutions",
-      designation: "Marketing VP",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-      status: "completed",
-      package: packageId,
-      packageType: "DFP180",
-      startDate: "2025-01-10",
-      dueDate: "2025-03-15",
-      totalTasks: 20,
-      completedTasks: 20,
-      pendingTasks: 0,
-      inProgressTasks: 0,
-      hasNewComments: false,
-      hasIssues: false,
-      teamMembers: [
-        {
-          id: "tm7",
-          name: "Grace Lee",
-          email: "grace@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Social Media Coordinator",
-          team: "social",
-          assignedDate: "2025-01-15",
-          assignedTasks: 7,
-          completedTasks: 7,
-          lateTasks: 0,
-        },
-        {
-          id: "tm8",
-          name: "Henry Garcia",
-          email: "henry@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Creator",
-          team: "content",
-          assignedDate: "2025-01-15",
-          assignedTasks: 6,
-          completedTasks: 6,
-          lateTasks: 0,
-        },
-      ],
-      socialSites: [
-        { name: "Facebook", url: "https://facebook.com", isRequired: true },
-        { name: "Instagram", url: "https://instagram.com", isRequired: true },
-        { name: "Pinterest", url: "https://pinterest.com", isRequired: true },
-        { name: "TikTok", url: "https://tiktok.com", isRequired: true },
-        { name: "YouTube", url: "https://youtube.com", isRequired: true },
-      ],
-      web2Sites: [
-        { name: "Shopify Blog", url: "https://shopify.com/blog", isRequired: true },
-        { name: "Medium", url: "https://medium.com", isRequired: true },
-        { name: "WordPress", url: "https://wordpress.com", isRequired: true },
-      ],
-      additionalAssets: [
-        { name: "Product Photos", description: "High-quality product photography", isRequired: true },
-        { name: "Brand Style Guide", description: "Complete brand guidelines", isRequired: true },
-        { name: "Email Templates", description: "Marketing email templates", isRequired: true },
-      ],
-    },
-  ]
-
-  return templates
-}
-
 export default function EditTemplatePage() {
   const params = useParams<{ packageId: string; templateId: string }>()
   const router = useRouter()
@@ -277,10 +73,11 @@ export default function EditTemplatePage() {
   const templateId = params.templateId as string
   const [activeTab, setActiveTab] = useState("socialSites")
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(true)
   const [packageDetails, setPackageDetails] = useState<any>(null)
-  const [template, setTemplate] = useState<any>(null)
+  const [template, setTemplate] = useState<Template | null>(null)
 
-  // Find the package details and template based on IDs
+  // Find the package details based on packageId
   useEffect(() => {
     // In a real app, you'd fetch this from an API
     const packages = [
@@ -338,14 +135,36 @@ export default function EditTemplatePage() {
 
     const pkg = packages.find((p) => p.id === packageId)
     setPackageDetails(pkg)
+  }, [packageId])
 
-    // Find the template
-    const templates = generateTemplates(packageId)
-    const foundTemplate = templates.find((t) => t.id === templateId)
-    setTemplate(foundTemplate)
-  }, [packageId, templateId])
+  // Fetch the template data
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      setIsLoadingTemplate(true)
+      try {
+        const response = await fetch(`/api/templates/${templateId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setTemplate(data)
+        } else {
+          toast.error("Failed to fetch template")
+          router.push(`/admin/packages/${packageId}/templates`)
+        }
+      } catch (error) {
+        console.error("Error fetching template:", error)
+        toast.error("An error occurred while fetching the template")
+        router.push(`/admin/packages/${packageId}/templates`)
+      } finally {
+        setIsLoadingTemplate(false)
+      }
+    }
 
-  // Initialize form with template values
+    if (templateId) {
+      fetchTemplate()
+    }
+  }, [templateId, packageId, router])
+
+  // Initialize form with default values
   const form = useForm<TemplateFormValues>({
     resolver: zodResolver(templateFormSchema),
     defaultValues: {
@@ -364,15 +183,15 @@ export default function EditTemplatePage() {
     if (template) {
       form.reset({
         templateName: template.name,
-        description: template.description,
-        packageId: packageId,
+        description: template.description || "",
+        packageId: template.packageId,
         isDefault: template.isDefault,
         socialSites: template.socialSites,
         web2Sites: template.web2Sites,
         additionalAssets: template.additionalAssets,
       })
     }
-  }, [template, form, packageId])
+  }, [template, form])
 
   // Handle form submission
   const onSubmit = async (data: TemplateFormValues) => {
@@ -411,11 +230,56 @@ export default function EditTemplatePage() {
         return
       }
 
-      // In a real app, you'd send this to your API
-      console.log("Updating template:", data)
+      // Filter out empty entries
+      const filteredSocialSites = data.socialSites.filter((site) => site.name.trim() !== "")
+      const filteredWeb2Sites = data.web2Sites.filter((site) => site.name.trim() !== "")
+      const filteredAdditionalAssets = data.additionalAssets.filter((asset) => asset.name.trim() !== "")
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      if (!template) {
+        throw new Error("Template not found")
+      }
+
+      // Create the updated template object
+      const updatedTemplate: Partial<Template> = {
+        id: templateId,
+        name: data.templateName,
+        description: data.description || "",
+        packageId: data.packageId,
+        packageType: data.packageId,
+        isDefault: data.isDefault,
+        status: template.status,
+        progress: template.progress,
+        startDate: template.startDate,
+        dueDate: template.dueDate,
+        totalTasks: filteredSocialSites.length + filteredWeb2Sites.length + filteredAdditionalAssets.length,
+        completedTasks: template.completedTasks,
+        pendingTasks:
+          filteredSocialSites.length +
+          filteredWeb2Sites.length +
+          filteredAdditionalAssets.length -
+          template.completedTasks -
+          template.inProgressTasks,
+        inProgressTasks: template.inProgressTasks,
+        hasNewComments: template.hasNewComments,
+        hasIssues: template.hasIssues,
+        teamMembers: template.teamMembers,
+        socialSites: filteredSocialSites,
+        web2Sites: filteredWeb2Sites,
+        additionalAssets: filteredAdditionalAssets,
+      }
+
+      // Save the template to the API
+      const response = await fetch(`/api/templates/${templateId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTemplate),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to update template")
+      }
 
       toast.success("Template updated successfully")
 
@@ -496,7 +360,7 @@ export default function EditTemplatePage() {
     form.setValue(fieldName, newItems)
   }
 
-  if (!packageDetails || !template) {
+  if (isLoadingTemplate || !packageDetails || !template) {
     return (
       <div className="container mx-auto py-8 flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">

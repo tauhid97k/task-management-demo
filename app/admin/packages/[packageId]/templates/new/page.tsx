@@ -31,6 +31,7 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import Link from "next/link"
+import type { Template } from "@/lib/data"
 
 // Define the template form schema
 const templateFormSchema = z.object({
@@ -150,31 +151,31 @@ export default function NewTemplatePage() {
   // Initialize form fields based on package details
   useEffect(() => {
     if (packageDetails) {
-      // Initialize social sites
-      const socialSites = Array(packageDetails.socialSites)
+      // Initialize social sites with empty values
+      const socialSites = Array(5) // Start with 5 empty sites, user can add more
         .fill(0)
         .map((_, index) => ({
-          name: `Social Site ${index + 1}`,
-          url: "",
-          isRequired: index < 5, // First 5 are required
-        }))
-
-      // Initialize web2 sites
-      const web2Sites = Array(packageDetails.web2Sites)
-        .fill(0)
-        .map((_, index) => ({
-          name: `Web 2.0 Site ${index + 1}`,
+          name: "",
           url: "",
           isRequired: index < 3, // First 3 are required
         }))
 
-      // Initialize additional assets
-      const additionalAssets = Array(packageDetails.additionalAssets)
+      // Initialize web2 sites with empty values
+      const web2Sites = Array(3) // Start with 3 empty sites
         .fill(0)
         .map((_, index) => ({
-          name: `Asset ${index + 1}`,
+          name: "",
+          url: "",
+          isRequired: index < 2, // First 2 are required
+        }))
+
+      // Initialize additional assets with empty values
+      const additionalAssets = Array(3) // Start with 3 empty assets
+        .fill(0)
+        .map((_, index) => ({
+          name: "",
           description: "",
-          isRequired: false,
+          isRequired: index === 0, // First one is required
         }))
 
       form.reset({
@@ -226,32 +227,48 @@ export default function NewTemplatePage() {
         return
       }
 
-      // In a real app, you'd send this to your API
-      console.log("Submitting template:", data)
+      // Filter out empty entries
+      const filteredSocialSites = data.socialSites.filter((site) => site.name.trim() !== "")
+      const filteredWeb2Sites = data.web2Sites.filter((site) => site.name.trim() !== "")
+      const filteredAdditionalAssets = data.additionalAssets.filter((asset) => asset.name.trim() !== "")
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const newTemplate = {
-        ...data,
+      // Create the template object
+      const newTemplate: Partial<Template> = {
         id: `template-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        name: data.templateName,
+        description: data.description || "",
+        packageId: data.packageId,
+        packageType: data.packageId,
+        isDefault: data.isDefault,
         status: "pending",
         progress: 0,
-        teamMembers: [],
         startDate: new Date().toISOString(),
         dueDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-        totalTasks: data.socialSites.length + data.web2Sites.length + data.additionalAssets.length,
+        totalTasks: filteredSocialSites.length + filteredWeb2Sites.length + filteredAdditionalAssets.length,
         completedTasks: 0,
-        pendingTasks: data.socialSites.length + data.web2Sites.length + data.additionalAssets.length,
+        pendingTasks: filteredSocialSites.length + filteredWeb2Sites.length + filteredAdditionalAssets.length,
         inProgressTasks: 0,
         hasNewComments: false,
         hasIssues: false,
+        teamMembers: [],
+        socialSites: filteredSocialSites,
+        web2Sites: filteredWeb2Sites,
+        additionalAssets: filteredAdditionalAssets,
       }
 
-      // In a real app, you'd save this to your database
-      // For now, we'll just navigate back to the templates page
+      // Save the template to the API
+      const response = await fetch("/api/templates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTemplate),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to save template")
+      }
+
       toast.success("Template created successfully")
 
       // Navigate back to the templates page
