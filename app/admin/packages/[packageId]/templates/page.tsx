@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
 import {
   Search,
   Calendar,
@@ -12,19 +12,33 @@ import {
   MessageSquare,
   AlertTriangle,
   CheckCheck,
-} from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+  ArrowLeft,
+  Copy,
+  UserPlus,
+  Eye,
+  Filter,
+  Check,
+  Globe,
+  Layout,
+  Layers,
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Progress } from "@/components/ui/progress"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Link from "next/link"
+import { AssignTemplateModal } from "@/components/assign-template-modal"
+import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
@@ -32,23 +46,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
+} from "@/components/ui/dialog"
 
 // Mock data
 const generateTemplates = (packageId: string) => {
   const templates = [
     {
       id: "template1",
-      name: "John Smith",
+      name: "Standard Marketing Template",
+      description: "Default template for marketing clients",
+      createdAt: "2025-03-01",
+      updatedAt: "2025-03-15",
+      isDefault: true,
       company: "Birds Of Eden Corporation",
       designation: "Marketing Director",
       avatar: "/placeholder.svg?height=80&width=80",
@@ -89,23 +98,32 @@ const generateTemplates = (packageId: string) => {
           completedTasks: 1,
           lateTasks: 0,
         },
-        {
-          id: "tm3",
-          name: "Charlie Davis",
-          email: "charlie@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Designer",
-          team: "assets",
-          assignedDate: "2025-03-07",
-          assignedTasks: 7,
-          completedTasks: 1,
-          lateTasks: 2,
-        },
+      ],
+      socialSites: [
+        { name: "Facebook", url: "https://facebook.com", isRequired: true },
+        { name: "Twitter", url: "https://twitter.com", isRequired: true },
+        { name: "Instagram", url: "https://instagram.com", isRequired: true },
+        { name: "LinkedIn", url: "https://linkedin.com", isRequired: true },
+        { name: "Pinterest", url: "https://pinterest.com", isRequired: false },
+      ],
+      web2Sites: [
+        { name: "Medium", url: "https://medium.com", isRequired: true },
+        { name: "Blogger", url: "https://blogger.com", isRequired: true },
+        { name: "WordPress", url: "https://wordpress.com", isRequired: false },
+      ],
+      additionalAssets: [
+        { name: "Logo Design", description: "Company logo in vector format", isRequired: true },
+        { name: "Banner Images", description: "Social media banners", isRequired: true },
+        { name: "Brand Guidelines", description: "PDF document", isRequired: false },
       ],
     },
     {
       id: "template2",
-      name: "Sarah Johnson",
+      name: "Tech Startup Template",
+      description: "Optimized for tech startups and SaaS companies",
+      createdAt: "2025-02-15",
+      updatedAt: "2025-02-28",
+      isDefault: false,
       company: "TechStart Inc.",
       designation: "CEO",
       avatar: "/placeholder.svg?height=80&width=80",
@@ -146,30 +164,38 @@ const generateTemplates = (packageId: string) => {
           completedTasks: 4,
           lateTasks: 1,
         },
-        {
-          id: "tm6",
-          name: "Frank Miller",
-          email: "frank@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "SEO Specialist",
-          team: "content",
-          assignedDate: "2025-02-25",
-          assignedTasks: 5,
-          completedTasks: 2,
-          lateTasks: 0,
-        },
+      ],
+      socialSites: [
+        { name: "Twitter", url: "https://twitter.com", isRequired: true },
+        { name: "LinkedIn", url: "https://linkedin.com", isRequired: true },
+        { name: "GitHub", url: "https://github.com", isRequired: true },
+        { name: "ProductHunt", url: "https://producthunt.com", isRequired: false },
+      ],
+      web2Sites: [
+        { name: "Medium", url: "https://medium.com", isRequired: true },
+        { name: "Dev.to", url: "https://dev.to", isRequired: true },
+        { name: "Hacker News", url: "https://news.ycombinator.com", isRequired: false },
+      ],
+      additionalAssets: [
+        { name: "Product Screenshots", description: "High-resolution product screenshots", isRequired: true },
+        { name: "Demo Videos", description: "Product demo videos", isRequired: true },
+        { name: "Technical Documentation", description: "API documentation", isRequired: false },
       ],
     },
     {
       id: "template3",
-      name: "Michael Brown",
+      name: "E-commerce Package",
+      description: "Complete template for online stores and e-commerce businesses",
+      createdAt: "2025-01-10",
+      updatedAt: "2025-02-05",
+      isDefault: false,
       company: "Global Retail Solutions",
       designation: "Marketing VP",
       avatar: "/placeholder.svg?height=80&width=80",
       progress: 100,
       status: "completed",
       package: packageId,
-      packageType: "DFP90",
+      packageType: "DFP180",
       startDate: "2025-01-10",
       dueDate: "2025-03-15",
       totalTasks: 20,
@@ -203,241 +229,129 @@ const generateTemplates = (packageId: string) => {
           completedTasks: 6,
           lateTasks: 0,
         },
-        {
-          id: "tm9",
-          name: "Ivy Chen",
-          email: "ivy@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Graphic Designer",
-          team: "assets",
-          assignedDate: "2025-01-20",
-          assignedTasks: 7,
-          completedTasks: 7,
-          lateTasks: 0,
-        },
+      ],
+      socialSites: [
+        { name: "Facebook", url: "https://facebook.com", isRequired: true },
+        { name: "Instagram", url: "https://instagram.com", isRequired: true },
+        { name: "Pinterest", url: "https://pinterest.com", isRequired: true },
+        { name: "TikTok", url: "https://tiktok.com", isRequired: true },
+        { name: "YouTube", url: "https://youtube.com", isRequired: true },
+      ],
+      web2Sites: [
+        { name: "Shopify Blog", url: "https://shopify.com/blog", isRequired: true },
+        { name: "Medium", url: "https://medium.com", isRequired: true },
+        { name: "WordPress", url: "https://wordpress.com", isRequired: true },
+      ],
+      additionalAssets: [
+        { name: "Product Photos", description: "High-quality product photography", isRequired: true },
+        { name: "Brand Style Guide", description: "Complete brand guidelines", isRequired: true },
+        { name: "Email Templates", description: "Marketing email templates", isRequired: true },
       ],
     },
-    {
-      id: "template4",
-      name: "Jennifer Wilson",
-      company: "Eco Friendly Products",
-      designation: "Product Manager",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 10,
-      status: "pending",
-      package: packageId,
-      packageType: "DFP120",
-      startDate: "2025-03-20",
-      dueDate: "2025-07-01",
-      totalTasks: 16,
-      completedTasks: 1,
-      pendingTasks: 12,
-      inProgressTasks: 3,
-      hasNewComments: true,
-      hasIssues: false,
-      teamMembers: [
-        {
-          id: "tm10",
-          name: "Kevin Park",
-          email: "kevin@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Marketing Specialist",
-          team: "social",
-          assignedDate: "2025-03-25",
-          assignedTasks: 8,
-          completedTasks: 1,
-          lateTasks: 0,
-        },
-        {
-          id: "tm11",
-          name: "Laura Adams",
-          email: "laura@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Writer",
-          team: "content",
-          assignedDate: "2025-03-25",
-          assignedTasks: 8,
-          completedTasks: 0,
-          lateTasks: 0,
-        },
-      ],
-    },
-    {
-      id: "template5",
-      name: "Robert Garcia",
-      company: "Digital Solutions Ltd",
-      designation: "CTO",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 45,
-      status: "in-progress",
-      package: packageId,
-      packageType: "DFP180",
-      startDate: "2025-02-01",
-      dueDate: "2025-05-15",
-      totalTasks: 22,
-      completedTasks: 10,
-      pendingTasks: 6,
-      inProgressTasks: 6,
-      hasNewComments: false,
-      hasIssues: true,
-      teamMembers: [
-        {
-          id: "tm12",
-          name: "Mike Thompson",
-          email: "mike@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Project Lead",
-          team: "management",
-          assignedDate: "2025-02-05",
-          assignedTasks: 7,
-          completedTasks: 3,
-          lateTasks: 1,
-        },
-        {
-          id: "tm13",
-          name: "Nancy White",
-          email: "nancy@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Manager",
-          team: "content",
-          assignedDate: "2025-02-05",
-          assignedTasks: 8,
-          completedTasks: 4,
-          lateTasks: 0,
-        },
-        {
-          id: "tm14",
-          name: "Oliver Scott",
-          email: "oliver@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Web Developer",
-          team: "assets",
-          assignedDate: "2025-02-10",
-          assignedTasks: 7,
-          completedTasks: 3,
-          lateTasks: 2,
-        },
-      ],
-    },
-    {
-      id: "template6",
-      name: "Patricia Martinez",
-      company: "Health & Wellness Co",
-      designation: "Brand Director",
-      avatar: "/placeholder.svg?height=80&width=80",
-      progress: 100,
-      status: "completed",
-      package: packageId,
-      packageType: "DFP90",
-      startDate: "2025-01-05",
-      dueDate: "2025-03-01",
-      totalTasks: 14,
-      completedTasks: 14,
-      pendingTasks: 0,
-      inProgressTasks: 0,
-      hasNewComments: false,
-      hasIssues: false,
-      teamMembers: [
-        {
-          id: "tm15",
-          name: "Paul Rodriguez",
-          email: "paul@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Brand Strategist",
-          team: "management",
-          assignedDate: "2025-01-10",
-          assignedTasks: 7,
-          completedTasks: 7,
-          lateTasks: 0,
-        },
-        {
-          id: "tm16",
-          name: "Quinn Taylor",
-          email: "quinn@example.com",
-          avatar: "/placeholder.svg?height=60&width=60",
-          role: "Content Creator",
-          team: "content",
-          assignedDate: "2025-01-10",
-          assignedTasks: 7,
-          completedTasks: 7,
-          lateTasks: 0,
-        },
-      ],
-    },
-  ];
+  ]
 
-  return templates;
-};
+  return templates
+}
 
 export default function TemplatesPage() {
-  const params = useParams<{ packageId: string }>();
-  const router = useRouter();
-  const packageId = params.packageId;
-  const [templates, setTemplates] = useState(generateTemplates(packageId));
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [isAgentsModalOpen, setIsAgentsModalOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  const [agentSearchQuery, setAgentSearchQuery] = useState("");
-  const [activeTeamTab, setActiveTeamTab] = useState("all");
+  const params = useParams<{ packageId: string }>()
+  const router = useRouter()
+  const packageId = params.packageId as string
+  const [templates, setTemplates] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [isAgentsModalOpen, setIsAgentsModalOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
+  const [agentSearchQuery, setAgentSearchQuery] = useState("")
+  const [activeTeamTab, setActiveTeamTab] = useState("all")
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [templateToAssign, setTemplateToAssign] = useState<any>(null)
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
+  const [templateToPreview, setTemplateToPreview] = useState<any>(null)
+
+  useEffect(() => {
+    if (packageId) {
+      // In a real app, you'd fetch this from your API
+      const data = generateTemplates(packageId)
+      setTemplates(data)
+    }
+  }, [packageId])
 
   const filteredTemplates = templates.filter((template) => {
     // Filter by status
     if (statusFilter !== "all" && template.status !== statusFilter) {
-      return false;
+      return false
     }
 
     // Filter by search query
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        template.name.toLowerCase().includes(query) ||
-        template.company.toLowerCase().includes(query) ||
-        template.designation.toLowerCase().includes(query)
-      );
+      const query = searchQuery.toLowerCase()
+      return template.name.toLowerCase().includes(query) || template.description.toLowerCase().includes(query)
     }
 
-    return true;
-  });
+    return true
+  })
 
   const handleViewAgents = (template: any) => {
-    setSelectedTemplate(template);
-    setIsAgentsModalOpen(true);
-  };
+    setSelectedTemplate(template)
+    setIsAgentsModalOpen(true)
+  }
 
   const handleViewTasks = (templateId: string) => {
-    router.push(`/admin/packages/${packageId}/templates/${templateId}`);
-  };
+    router.push(`/admin/packages/${packageId}/templates/${templateId}`)
+  }
 
-  const filteredAgents = selectedTemplate
-    ? selectedTemplate.teamMembers.filter((agent: any) => {
-        // Filter by team
-        if (activeTeamTab !== "all" && agent.team !== activeTeamTab) {
-          return false;
-        }
+  const handleCreateTemplate = () => {
+    // Navigate to the new template creation page
+    router.push(`/admin/packages/${packageId}/templates/new`)
+  }
 
-        // Filter by search query
-        if (agentSearchQuery) {
-          const query = agentSearchQuery.toLowerCase();
-          return (
-            agent.name.toLowerCase().includes(query) ||
-            agent.email.toLowerCase().includes(query)
-          );
-        }
+  const handleEditTemplate = (template: any) => {
+    // In a real app, you'd navigate to an edit page with the template ID
+    router.push(`/admin/packages/${packageId}/templates/edit/${template.id}`)
+  }
 
-        return true;
-      })
-    : [];
+  const handleAssignTemplate = (template: any) => {
+    setTemplateToAssign(template)
+    setIsAssignModalOpen(true)
+  }
+
+  const handleDuplicateTemplate = (template: any) => {
+    const newTemplate = {
+      ...template,
+      id: `template-${Date.now()}`,
+      name: `${template.name} (Copy)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isDefault: false,
+    }
+
+    setTemplates([...templates, newTemplate])
+    toast.success("Template duplicated successfully")
+  }
+
+  const handlePreviewTemplate = (template: any) => {
+    setTemplateToPreview(template)
+    setIsPreviewModalOpen(true)
+  }
+
+  const handleMakeDefault = (template: any) => {
+    // Update all templates to not be default
+    const updatedTemplates = templates.map((t) => ({
+      ...t,
+      isDefault: t.id === template.id,
+    }))
+
+    setTemplates(updatedTemplates)
+    toast.success(`"${template.name}" set as default template`)
+  }
 
   return (
     <div className="container mx-auto py-8">
       <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
-            <Link
-              href="/admin/packages"
-              className="text-gray-500 hover:text-gray-700"
-            >
+            <Link href="/admin/packages" className="text-gray-500 hover:text-gray-700">
               <Button variant="ghost" size="sm" className="gap-1">
                 <ArrowLeft size={16} />
                 <span>Back to Packages</span>
@@ -469,7 +383,7 @@ export default function TemplatesPage() {
               </SelectContent>
             </Select>
 
-            <Button className="bg-[#00b894] hover:bg-[#00a382]">
+            <Button className="bg-[#00b894] hover:bg-[#00a382]" onClick={handleCreateTemplate}>
               <Plus className="h-4 w-4 mr-2" />
               New Template
             </Button>
@@ -480,378 +394,407 @@ export default function TemplatesPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-              <span>
-                Pending:{" "}
-                {templates.filter((c) => c.status === "pending").length}
-              </span>
+              <span>Pending: {templates.filter((c) => c.status === "pending").length}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-              <span>
-                In Progress:{" "}
-                {templates.filter((c) => c.status === "in-progress").length}
-              </span>
+              <span>In Progress: {templates.filter((c) => c.status === "in-progress").length}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-              <span>
-                Completed:{" "}
-                {templates.filter((c) => c.status === "completed").length}
-              </span>
+              <span>Completed: {templates.filter((c) => c.status === "completed").length}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredTemplates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            packageId={packageId}
-            onViewAgents={() => handleViewAgents(template)}
-            onViewTasks={() => handleViewTasks(template.id)}
-          />
-        ))}
+        {filteredTemplates.length === 0 ? (
+          <div className="col-span-full text-center py-12 border rounded-lg bg-muted/20">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <FileText className="h-12 w-12 text-muted-foreground/50" />
+              <h3 className="text-xl font-medium">No templates found</h3>
+              <p className="text-muted-foreground">
+                {searchQuery || statusFilter !== "all"
+                  ? "Try adjusting your search or filters"
+                  : "Create your first template to get started"}
+              </p>
+              {(searchQuery || statusFilter !== "all") && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery("")
+                    setStatusFilter("all")
+                  }}
+                  className="mt-2"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Clear Filters
+                </Button>
+              )}
+              {!searchQuery && statusFilter === "all" && (
+                <Button className="bg-[#00b894] hover:bg-[#00a382] mt-2" onClick={handleCreateTemplate}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Template
+                </Button>
+              )}
+            </div>
+          </div>
+        ) : (
+          filteredTemplates.map((template) => (
+            <Card key={template.id} className="overflow-hidden">
+              <CardHeader className="p-5 border-b">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-semibold">{template.name}</h2>
+                      {template.isDefault && (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          Default
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-gray-500">{template.description}</p>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                      <span>Created: {new Date(template.createdAt).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>Updated: {new Date(template.updatedAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge
+                      className={
+                        template.status === "completed"
+                          ? "bg-emerald-100 text-emerald-800 text-sm px-3 py-1"
+                          : template.status === "in-progress"
+                            ? "bg-blue-100 text-blue-800 text-sm px-3 py-1"
+                            : "bg-amber-100 text-amber-800 text-sm px-3 py-1"
+                      }
+                    >
+                      {template.status === "completed"
+                        ? "Completed"
+                        : template.status === "in-progress"
+                          ? "In Progress"
+                          : "Pending"}
+                    </Badge>
+                    <Badge variant="outline" className="bg-gray-50">
+                      Package: {template.packageType}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-5">
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-500">Overall Progress</span>
+                      <span className="font-medium">{template.progress}%</span>
+                    </div>
+                    <Progress value={template.progress} className="h-2" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-3 rounded-lg border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileText className="h-5 w-5 text-gray-500" />
+                        <h3 className="font-medium">Configuration</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="text-gray-500">Social Sites:</div>
+                        <div className="font-medium">{template.socialSites.length}</div>
+
+                        <div className="text-gray-500">Web 2.0 Sites:</div>
+                        <div className="font-medium">{template.web2Sites.length}</div>
+
+                        <div className="text-gray-500">Additional Assets:</div>
+                        <div className="font-medium">{template.additionalAssets.length}</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-3 rounded-lg border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <h3 className="font-medium">Timeline</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="text-gray-500">Start Date:</div>
+                        <div className="font-medium">{new Date(template.startDate).toLocaleDateString()}</div>
+
+                        <div className="text-gray-500">Due Date:</div>
+                        <div className="font-medium">{new Date(template.dueDate).toLocaleDateString()}</div>
+
+                        <div className="text-gray-500">Team Size:</div>
+                        <div className="font-medium">{template.teamMembers.length} members</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    {template.hasNewComments && (
+                      <div className="flex items-center gap-1 text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-sm">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>New comments</span>
+                      </div>
+                    )}
+                    {template.hasIssues && (
+                      <div className="flex items-center gap-1 text-red-600 bg-red-50 px-3 py-1 rounded-full text-sm">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>Issues reported</span>
+                      </div>
+                    )}
+                    {!template.hasIssues && !template.hasNewComments && (
+                      <div className="flex items-center gap-1 text-zinc-600 bg-zinc-100 px-3 py-1 rounded-full text-sm">
+                        <CheckCheck className="h-4 w-4" />
+                        <span>No Issues</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="border-t p-0 grid grid-cols-4">
+                <Button variant="ghost" className="rounded-none h-12" onClick={() => handleViewAgents(template)}>
+                  <Users className="h-4 w-4 mr-2" />
+                  Team
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="rounded-none h-12 border-l"
+                  onClick={() => handleViewTasks(template.id)}
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Tasks
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="rounded-none h-12 border-l"
+                  onClick={() => handleEditTemplate(template)}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+                <div className="flex border-l">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="rounded-none h-12 flex-1">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Assign
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleAssignTemplate(template)}>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Assign to Client
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handlePreviewTemplate(template)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview Template
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleDuplicateTemplate(template)}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Duplicate Template
+                      </DropdownMenuItem>
+                      {!template.isDefault && (
+                        <DropdownMenuItem onClick={() => handleMakeDefault(template)}>
+                          <Check className="h-4 w-4 mr-2" />
+                          Make Default
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardFooter>
+            </Card>
+          ))
+        )}
       </div>
 
-      {/* View Agents Modal */}
+      {/* Assign Template Modal */}
+      {templateToAssign && (
+        <AssignTemplateModal
+          isOpen={isAssignModalOpen}
+          onClose={() => setIsAssignModalOpen(false)}
+          templateId={templateToAssign.id}
+          templateName={templateToAssign.name}
+          packageId={packageId}
+        />
+      )}
 
-      {selectedTemplate && (
-        <Dialog open={isAgentsModalOpen} onOpenChange={setIsAgentsModalOpen}>
-          <DialogContent className="max-w-[800px]">
+      {/* Template Preview Modal */}
+      {templateToPreview && (
+        <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle className="text-xl">
-                Team Members - {selectedTemplate.name}
-              </DialogTitle>
-              <DialogDescription>
-                {selectedTemplate.company} • {selectedTemplate.designation}
-              </DialogDescription>
+              <DialogTitle>Template Preview: {templateToPreview.name}</DialogTitle>
+              <DialogDescription>Preview how this template will appear when assigned to clients</DialogDescription>
             </DialogHeader>
 
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4 my-4">
-              <div className="relative w-full md:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                <Input
-                  placeholder="Search team members..."
-                  className="pl-9 w-full md:w-[300px]"
-                  value={agentSearchQuery}
-                  onChange={(e) => setAgentSearchQuery(e.target.value)}
-                />
-              </div>
-
-              <Tabs
-                value={activeTeamTab}
-                onValueChange={setActiveTeamTab}
-                className="w-full md:w-auto"
-              >
-                <TabsList>
-                  <TabsTrigger value="all">All Teams</TabsTrigger>
-                  <TabsTrigger value="social">Social</TabsTrigger>
-                  <TabsTrigger value="content">Content</TabsTrigger>
-                  <TabsTrigger value="assets">Assets</TabsTrigger>
-                  <TabsTrigger value="management">Management</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredAgents.length === 0 ? (
-                  <div className="col-span-full text-center py-8 text-gray-500">
-                    No team members found matching your criteria.
+            <div className="overflow-auto flex-1 p-4">
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                  <h3 className="text-lg font-medium mb-3">Template Information</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-500">Package Type:</p>
+                      <p className="font-medium">{templateToPreview.packageType}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Default Template:</p>
+                      <p className="font-medium">{templateToPreview.isDefault ? "Yes" : "No"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Created:</p>
+                      <p className="font-medium">{new Date(templateToPreview.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Last Updated:</p>
+                      <p className="font-medium">{new Date(templateToPreview.updatedAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                ) : (
-                  filteredAgents.map((agent: any) => (
-                    <Card key={agent.id} className="overflow-hidden gap-0">
-                      <CardHeader className="p-4">
-                        <div className="flex items-start gap-3">
-                          <Avatar className="h-12 w-12">
-                            <AvatarImage src={agent.avatar} alt={agent.name} />
-                            <AvatarFallback>
-                              {agent.name.substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium">{agent.name}</h3>
-                            <p className="text-sm text-gray-500">
-                              {agent.role}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              {agent.email}
-                            </p>
-                          </div>
-                          <Badge
-                            className={
-                              agent.team === "social"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : agent.team === "content"
-                                ? "bg-blue-100 text-blue-800"
-                                : agent.team === "assets"
-                                ? "bg-purple-100 text-purple-800"
-                                : "bg-gray-100 text-gray-800"
-                            }
-                          >
-                            {agent.team.charAt(0).toUpperCase() +
-                              agent.team.slice(1)}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0 flex flex-col h-full">
-                        <div className="grid grid-cols-3 gap-2 text-center mb-4">
-                          <div className="bg-gray-50 p-2 rounded">
-                            <div className="text-lg font-semibold">
-                              {agent.assignedTasks}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              Assigned
-                            </div>
-                          </div>
-                          <div className="bg-emerald-50 p-2 rounded">
-                            <div className="text-lg font-semibold">
-                              {agent.completedTasks}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              Completed
-                            </div>
-                          </div>
-                          <div
-                            className={`p-2 rounded ${
-                              agent.lateTasks > 0 ? "bg-red-50" : "bg-gray-50"
-                            }`}
-                          >
-                            <div
-                              className={`text-lg font-semibold ${
-                                agent.lateTasks > 0 ? "text-red-600" : ""
-                              }`}
-                            >
-                              {agent.lateTasks}
-                            </div>
-                            <div className="text-xs text-gray-500">Late</div>
-                          </div>
-                        </div>
+                </div>
 
-                        <div className="mt-auto">
-                          <div className="mt-3 text-xs text-gray-500 flex items-center gap-1 mb-4">
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              Assigned:{" "}
-                              {new Date(
-                                agent.assignedDate
-                              ).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mb-1 flex justify-between">
-                            <span>Completion Rate</span>
-                            <span>
-                              {agent.assignedTasks > 0
-                                ? Math.round(
-                                    (agent.completedTasks /
-                                      agent.assignedTasks) *
-                                      100
-                                  )
-                                : 0}
-                              %
-                            </span>
-                          </div>
-                          <Progress
-                            value={
-                              agent.assignedTasks > 0
-                                ? (agent.completedTasks / agent.assignedTasks) *
-                                  100
-                                : 0
-                            }
-                            className="h-1.5"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
+                <Tabs defaultValue="socialSites">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="socialSites" className="relative">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        <span>Social Sites</span>
+                        <Badge className="ml-1 bg-primary/20 text-primary">
+                          {templateToPreview.socialSites.length}
+                        </Badge>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger value="web2Sites" className="relative">
+                      <div className="flex items-center gap-2">
+                        <Layout className="h-4 w-4" />
+                        <span>Web 2.0 Sites</span>
+                        <Badge className="ml-1 bg-primary/20 text-primary">{templateToPreview.web2Sites.length}</Badge>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger value="additionalAssets" className="relative">
+                      <div className="flex items-center gap-2">
+                        <Layers className="h-4 w-4" />
+                        <span>Additional Assets</span>
+                        <Badge className="ml-1 bg-primary/20 text-primary">
+                          {templateToPreview.additionalAssets.length}
+                        </Badge>
+                      </div>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="socialSites" className="mt-4">
+                    <div className="space-y-3">
+                      {templateToPreview.socialSites.map((site: any, index: number) => (
+                        <Card key={index}>
+                          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={site.isRequired ? "default" : "outline"}
+                                className={site.isRequired ? "bg-primary" : ""}
+                              >
+                                {site.isRequired ? "Required" : "Optional"}
+                              </Badge>
+                              <h4 className="text-sm font-medium">{site.name}</h4>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-4 pt-2">
+                            <div className="text-sm">
+                              <p className="text-gray-500">URL:</p>
+                              <a
+                                href={site.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                {site.url}
+                              </a>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="web2Sites" className="mt-4">
+                    <div className="space-y-3">
+                      {templateToPreview.web2Sites.map((site: any, index: number) => (
+                        <Card key={index}>
+                          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={site.isRequired ? "default" : "outline"}
+                                className={site.isRequired ? "bg-primary" : ""}
+                              >
+                                {site.isRequired ? "Required" : "Optional"}
+                              </Badge>
+                              <h4 className="text-sm font-medium">{site.name}</h4>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-4 pt-2">
+                            <div className="text-sm">
+                              <p className="text-gray-500">URL:</p>
+                              <a
+                                href={site.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                {site.url}
+                              </a>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="additionalAssets" className="mt-4">
+                    <div className="space-y-3">
+                      {templateToPreview.additionalAssets.map((asset: any, index: number) => (
+                        <Card key={index}>
+                          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={asset.isRequired ? "default" : "outline"}
+                                className={asset.isRequired ? "bg-primary" : ""}
+                              >
+                                {asset.isRequired ? "Required" : "Optional"}
+                              </Badge>
+                              <h4 className="text-sm font-medium">{asset.name}</h4>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-4 pt-2">
+                            <div className="text-sm">
+                              <p className="text-gray-500">Description:</p>
+                              <p>{asset.description || "No description provided"}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
 
             <DialogFooter className="border-t pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setIsAgentsModalOpen(false)}
-              >
-                Close
+              <Button variant="outline" onClick={() => setIsPreviewModalOpen(false)}>
+                Close Preview
               </Button>
-              <Button className="bg-[#00b894] hover:bg-[#00a382]">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Team Member
+              <Button
+                className="bg-[#00b894] hover:bg-[#00a382]"
+                onClick={() => {
+                  setIsPreviewModalOpen(false)
+                  handleAssignTemplate(templateToPreview)
+                }}
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Assign to Client
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
     </div>
-  );
-}
-
-function TemplateCard({
-  template,
-  onViewAgents,
-  onViewTasks,
-}: {
-  template: any;
-  packageId: string;
-  onViewAgents: () => void;
-  onViewTasks: () => void;
-}) {
-  return (
-    <Card className="overflow-hidden gap-0">
-      <CardHeader className="p-5 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={template.avatar} alt={template.name} />
-              <AvatarFallback>{template.name.substring(0, 2)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold">{template.name}</h2>
-              <p className="text-gray-500">{template.company}</p>
-              <p className="text-gray-500">{template.designation}</p>
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <Badge
-              className={
-                template.status === "completed"
-                  ? "bg-emerald-100 text-emerald-800 text-sm px-3 py-1"
-                  : template.status === "in-progress"
-                  ? "bg-blue-100 text-blue-800 text-sm px-3 py-1"
-                  : "bg-amber-100 text-amber-800 text-sm px-3 py-1"
-              }
-            >
-              {template.status === "completed"
-                ? "Completed"
-                : template.status === "in-progress"
-                ? "In Progress"
-                : "Pending"}
-            </Badge>
-            <Badge variant="outline" className="bg-gray-50">
-              Package: {template.packageType}
-            </Badge>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500">Overall Progress</span>
-              <span className="font-medium">{template.progress}%</span>
-            </div>
-            <Progress value={template.progress} className="h-2" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 p-3 rounded-lg border">
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-5 w-5 text-gray-500" />
-                <h3 className="font-medium">Task Summary</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="text-gray-500">Total Tasks:</div>
-                <div className="font-medium">{template.totalTasks}</div>
-
-                <div className="text-gray-500">Completed:</div>
-                <div className="font-medium">{template.completedTasks}</div>
-
-                <div className="text-gray-500">In Progress:</div>
-                <div className="font-medium">{template.inProgressTasks}</div>
-
-                <div className="text-gray-500">Pending:</div>
-                <div className="font-medium">{template.pendingTasks}</div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-3 rounded-lg border">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="h-5 w-5 text-gray-500" />
-                <h3 className="font-medium">Timeline</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="text-gray-500">Start Date:</div>
-                <div className="font-medium">
-                  {new Date(template.startDate).toLocaleDateString()}
-                </div>
-
-                <div className="text-gray-500">Due Date:</div>
-                <div className="font-medium">
-                  {new Date(template.dueDate).toLocaleDateString()}
-                </div>
-
-                <div className="text-gray-500">Team Size:</div>
-                <div className="font-medium">
-                  {template.teamMembers.length} members
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {template.hasNewComments && (
-              <div className="flex items-center gap-1 text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-sm">
-                <MessageSquare className="h-4 w-4" />
-                <span>New comments</span>
-              </div>
-            )}
-            {template.hasIssues && (
-              <div className="flex items-center gap-1 text-red-600 bg-red-50 px-3 py-1 rounded-full text-sm">
-                <AlertTriangle className="h-4 w-4" />
-                <span>Issues reported</span>
-              </div>
-            )}
-            {!template.hasIssues && !template.hasNewComments && (
-              <div className="flex items-center gap-1 text-zinc-600 bg-zinc-100 px-3 py-1 rounded-full text-sm">
-                <CheckCheck className="h-4 w-4" />
-                <span>No Issues</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="border-t grid grid-cols-2 p-0">
-        <Button
-          variant="ghost"
-          className="rounded-none h-12"
-          onClick={onViewAgents}
-        >
-          <Users className="h-4 w-4 mr-2" />
-          View Team Members
-        </Button>
-        <Button
-          variant="ghost"
-          className="rounded-none h-12 border-l"
-          onClick={onViewTasks}
-        >
-          <CheckCircle className="h-4 w-4 mr-2" />
-          View Tasks
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
-
-function ArrowLeft(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m12 19-7-7 7-7" />
-      <path d="M19 12H5" />
-    </svg>
-  );
+  )
 }
