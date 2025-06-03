@@ -61,5 +61,12 @@
     "clientId": "client1",
     "assignedAt": "2025-04-21T06:43:43.705Z",
     "status": "active"
+  },
+  {
+    "id": "assignment-1748874218028",
+    "templateId": "template1",
+    "clientId": "client1",
+    "assignedAt": "2025-06-02T14:23:38.028Z",
+    "status": "active"
   }
 ]
